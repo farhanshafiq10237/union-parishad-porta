@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>অ্যাডমিন | ইউনিয়ন পরিষদ পোর্টাল</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--g:#006A4E;--r:#F42A41;--gd:#C9A84C;--dk:#0a1628;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans Bengali',sans-serif;background:#f1f5f9;min-height:100vh;}
+/* ── FIX: pulse defined here in <style>, NOT inline in HTML ── */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.login-bg{position:fixed;inset:0;background:radial-gradient(ellipse at 25% 60%,rgba(201,168,76,.2) 0%,transparent 50%),radial-gradient(ellipse at 75% 20%,rgba(0,106,78,.25) 0%,transparent 45%),linear-gradient(135deg,var(--dk) 0%,#0d2140 100%);z-index:0;}
+.content{position:relative;z-index:1;}
+.sidebar{width:258px;background:linear-gradient(160deg,var(--dk) 0%,#0d2140 100%);min-height:100vh;position:fixed;left:0;top:0;z-index:50;border-right:1px solid rgba(201,168,76,.25);transition:transform .3s;}
+.main{margin-left:258px;}
+.nav-btn{display:flex;align-items:center;gap:.7rem;padding:.75rem 1.2rem;color:rgba(255,255,255,.6);cursor:pointer;transition:all .25s;border-left:3px solid transparent;font-size:.88rem;border:none;background:none;width:100%;text-align:left;font-family:'Noto Sans Bengali',sans-serif;}
+.nav-btn:hover{background:rgba(255,255,255,.07);color:#fff;border-left-color:var(--gd);}
+.nav-btn.on{background:rgba(201,168,76,.15);color:var(--gd);border-left-color:var(--gd);font-weight:600;}
+.topbar{background:#fff;padding:.9rem 1.5rem;border-bottom:2px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.07);}
+.page{display:none;padding:1.5rem;}
+.page.on{display:block;animation:fadeUp .3s ease;}
+.card{background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.06);overflow:hidden;}
+.card-hdr{padding:1.1rem 1.5rem;border-bottom:1px solid #f1f5f2;display:flex;align-items:center;justify-content:space-between;}
+.card-body{padding:1.5rem;}
+.form-input{width:100%;padding:.65rem .9rem;border:2px solid #e2e8f0;border-radius:8px;font-family:'Noto Sans Bengali',sans-serif;font-size:.88rem;outline:none;transition:all .3s;background:#f8faf9;}
+.form-input:focus{border-color:var(--g);background:#fff;box-shadow:0 0 0 3px rgba(0,106,78,.1);}
+.btn{padding:.6rem 1rem;border-radius:8px;font-family:'Noto Sans Bengali',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .25s;border:none;}
+.btn-g{background:var(--g);color:#fff;}.btn-g:hover{background:#004d38;}
+.btn-gd{background:var(--gd);color:#fff;}.btn-gd:hover{background:#a8883a;}
+.btn-r{background:var(--r);color:#fff;}.btn-r:hover{background:#c41f33;}
+.btn-outline{background:transparent;border:2px solid var(--g);color:var(--g);}.btn-outline:hover{background:var(--g);color:#fff;}
+.badge{display:inline-flex;align-items:center;gap:.2rem;padding:.2rem .55rem;border-radius:20px;font-size:.75rem;font-weight:600;}
+.bp{background:#fef3c7;color:#92400e;}.ba{background:#d1fae5;color:#065f46;}.br{background:#fee2e2;color:#991b1b;}.bpr{background:#dbeafe;color:#1e40af;}
+.notif{position:fixed;top:20px;right:20px;z-index:9999;padding:.9rem 1.4rem;border-radius:10px;color:#fff;font-family:'Noto Sans Bengali',sans-serif;font-size:.9rem;transform:translateX(120%);transition:transform .4s cubic-bezier(.34,1.56,.64,1);max-width:330px;box-shadow:0 8px 30px rgba(0,0,0,.25);}
+.notif.show{transform:translateX(0);}
+.notif.s{background:linear-gradient(135deg,#006A4E,#004d38);}
+.notif.e{background:linear-gradient(135deg,#F42A41,#c41f33);}
+.notif.i{background:linear-gradient(135deg,#2563eb,#1d4ed8);}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(5px);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;}
+.modal.hidden{display:none;}
+.modal-box{background:#fff;border-radius:18px;max-width:700px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.35);}
+.modal-hdr{background:linear-gradient(135deg,var(--dk),#0d2140);padding:1.2rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.stat-card{background:#fff;border-radius:14px;padding:1.2rem;box-shadow:0 2px 10px rgba(0,0,0,.07);border-top:4px solid;}
+.log-row{padding:.6rem .9rem;border-left:3px solid;margin-bottom:.3rem;border-radius:0 6px 6px 0;font-size:.8rem;}
+.pulse-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite;}
+table{width:100%;border-collapse:collapse;}
+th{background:#f8fafc;padding:.7rem 1rem;text-align:left;font-size:.78rem;color:#6b7280;font-weight:600;border-bottom:2px solid #e5e7eb;}
+td{padding:.7rem 1rem;border-bottom:1px solid #f3f4f6;font-size:.82rem;}
+tr:hover td{background:#fafffe;}
+.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle;}
+@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}}
+</style>
+</head>
+<body>
+<div class="notif" id="notif"></div>
+
+<!-- ═══════════ LOGIN SCREEN ═══════════ -->
+<div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
+  <div class="login-bg"></div>
+  <div class="content w-full max-w-md">
+    <div class="text-center mb-7">
+      <div class="inline-flex items-center justify-center w-20 h-20 rounded-full mb-4" style="background:linear-gradient(135deg,var(--gd),#a8883a);border:3px solid rgba(255,255,255,.2);box-shadow:0 8px 25px rgba(201,168,76,.3);">
+        <span style="font-size:2.5rem;">👮</span>
+      </div>
+      <h1 class="text-white font-bold text-xl" style="font-family:'Noto Serif Bengali',serif;">সরকারি কর্মকর্তা প্রবেশ</h1>
+      <p class="text-yellow-300 text-sm mt-1">ইউনিয়ন পরিষদ অ্যাডমিন প্যানেল</p>
+    </div>
+    <div style="background:rgba(255,255,255,.97);border-radius:20px;box-shadow:0 25px 70px rgba(0,0,0,.5),0 0 0 1px rgba(201,168,76,.2);overflow:hidden;">
+      <div style="background:linear-gradient(135deg,var(--dk),#0d2140);padding:1.5rem 2rem;">
+        <p class="text-white font-semibold">🛡️ নিরাপদ প্রশাসনিক লগইন</p>
+        <p class="text-gray-400 text-xs mt-1">শুধুমাত্র অনুমোদিত কর্মকর্তাদের জন্য</p>
+      </div>
+      <div class="p-7 space-y-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">কর্মকর্তা ID</label>
+          <input type="text" id="al-govid" class="form-input" placeholder="GOV-XXXX-XXXX">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">পদবী</label>
+          <select id="al-role" class="form-input">
+            <option value="">পদবী নির্বাচন করুন</option>
+            <option value="chairman">চেয়ারম্যান</option>
+            <option value="secretary">ইউপি সচিব</option>
+            <option value="monitor">সরকারি পর্যবেক্ষক</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">পাসওয়ার্ড</label>
+          <input type="password" id="al-pass" class="form-input" placeholder="••••••••">
+        </div>
+        <button id="al-btn" onclick="adminLogin()" class="btn btn-gd w-full py-3 text-base">🔐 প্রবেশ করুন →</button>
+        <div class="p-4 rounded-xl" style="background:#fffbeb;border:1px dashed #fde68a;">
+          <p class="text-xs font-bold text-yellow-800 mb-2">🧪 ডেমো অ্যাডমিন:</p>
+          <div class="space-y-1.5">
+            <button onclick="fillAdmin('GOV-1234-ABCD','chairman','admin123')" class="w-full text-left text-xs p-2 rounded-lg bg-yellow-50 hover:bg-yellow-100 text-yellow-800 font-medium transition-colors">👑 চেয়ারম্যান: GOV-1234-ABCD / admin123</button>
+            <button onclick="fillAdmin('GOV-5678-EFGH','secretary','sec123')" class="w-full text-left text-xs p-2 rounded-lg bg-yellow-50 hover:bg-yellow-100 text-yellow-800 font-medium transition-colors">📋 সচিব: GOV-5678-EFGH / sec123</button>
+            <button onclick="fillAdmin('GOV-9999-ZZZZ','monitor','mon123')" class="w-full text-left text-xs p-2 rounded-lg bg-yellow-50 hover:bg-yellow-100 text-yellow-800 font-medium transition-colors">🔍 মনিটর: GOV-9999-ZZZZ / mon123</button>
+          </div>
+        </div>
+        <div class="text-center border-t pt-3">
+          <a href="/login" class="text-gray-400 text-xs hover:text-gray-600">← নাগরিক লগইন পেজে ফিরুন</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ ADMIN PANEL ═══════════ -->
+<div id="admin-panel" class="hidden">
+  <aside class="sidebar" id="sb">
+    <div style="padding:1.3rem;border-bottom:1px solid rgba(201,168,76,.2);">
+      <div class="flex items-center gap-3">
+        <div style="width:46px;height:46px;background:linear-gradient(135deg,var(--gd),#a8883a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;border:2px solid rgba(255,255,255,.15);flex-shrink:0;">👮</div>
+        <div class="overflow-hidden">
+          <div class="text-white font-bold text-sm truncate" id="sb-name">অ্যাডমিন</div>
+          <div class="text-yellow-400 text-xs font-semibold" id="sb-role">—</div>
+        </div>
+      </div>
+      <div class="mt-2 px-2 py-1 rounded-lg text-center text-xs font-semibold" style="background:rgba(201,168,76,.2);color:var(--gd);">🛡️ সরকারি অ্যাক্সেস</div>
+    </div>
+    <nav class="py-3">
+      <div class="px-3 pb-1 text-xs" style="color:rgba(255,255,255,.3);">প্রধান মেনু</div>
+      <button class="nav-btn on" data-page="overview" onclick="show('overview')">📊 সারসংক্ষেপ / Overview</button>
+      <button class="nav-btn" data-page="apps" onclick="show('apps')">📋 সকল আবেদন / All Apps</button>
+      <button class="nav-btn" data-page="pending" onclick="show('pending')">⏳ অপেক্ষমাণ <span id="pend-badge" style="margin-left:auto;background:var(--r);color:#fff;border-radius:12px;padding:1px 7px;font-size:.7rem;font-weight:700;">0</span></button>
+      <button class="nav-btn" data-page="users" onclick="show('users')">👥 নাগরিক / Citizens</button>
+      <button class="nav-btn" data-page="admin-apply" onclick="show('admin-apply')">✍️ নাগরিকের পক্ষে আবেদন</button>
+      <div class="px-3 py-1 mt-1 border-t text-xs" style="color:rgba(255,255,255,.3);border-color:rgba(255,255,255,.07);">বিশেষ</div>
+      <button class="nav-btn" data-page="audit" onclick="show('audit')">📝 অডিট লগ / Audit Log</button>
+      <button class="nav-btn" data-page="reports" onclick="show('reports')">📈 রিপোর্ট / Reports</button>
+      <div style="position:absolute;bottom:1rem;left:0;right:0;padding:0 .8rem;">
+        <button onclick="adminLogout()" class="nav-btn" style="color:rgba(244,42,65,.8);">🚪 লগআউট</button>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <!-- TOPBAR — pulse-dot is a <div> with CSS class, NOT inline keyframes -->
+    <div class="topbar">
+      <div class="flex items-center gap-3">
+        <button onclick="document.getElementById('sb').classList.toggle('open')" class="md:hidden text-gray-600 text-xl">☰</button>
+        <div>
+          <h1 class="font-bold text-gray-800 text-base" id="page-title">প্রশাসনিক ড্যাশবোর্ড</h1>
+          <p class="text-gray-400 text-xs">ইউনিয়ন পরিষদ | সরকারি নিয়ন্ত্রণ প্যানেল</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-full" style="background:#f0fdf4;border:1px solid #bbf7d0;">
+          <div class="pulse-dot"></div>
+          <span class="text-green-700 text-xs font-semibold">সিস্টেম সক্রিয়</span>
+        </div>
+        <div class="text-xs text-gray-400" id="a-clock"></div>
+      </div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div class="page on" id="p-overview">
+      <div class="mb-5"><h2 class="text-xl font-bold text-gray-800">📊 সিস্টেম সারসংক্ষেপ</h2><p class="text-gray-400 text-sm" id="ov-date"></p></div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="stat-card" style="border-color:var(--g);"><div class="text-3xl font-bold text-green-700" id="ov-tot">০</div><div class="text-sm text-gray-600 mt-1">মোট আবেদন</div></div>
+        <div class="stat-card" style="border-color:#f59e0b;"><div class="text-3xl font-bold text-yellow-600" id="ov-pnd">০</div><div class="text-sm text-gray-600 mt-1">অপেক্ষমাণ</div></div>
+        <div class="stat-card" style="border-color:#10b981;"><div class="text-3xl font-bold text-emerald-600" id="ov-apv">০</div><div class="text-sm text-gray-600 mt-1">অনুমোদিত</div></div>
+        <div class="stat-card" style="border-color:#6366f1;"><div class="text-3xl font-bold text-indigo-600" id="ov-usr">০</div><div class="text-sm text-gray-600 mt-1">নিবন্ধিত নাগরিক</div></div>
+      </div>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="card"><div class="card-hdr"><span class="font-bold text-gray-800 text-sm">🕐 সর্বশেষ আবেদন</span><button onclick="show('pending')" class="btn btn-g text-xs">সব দেখুন</button></div><div class="card-body" id="ov-recent"></div></div>
+        <div class="card"><div class="card-hdr"><span class="font-bold text-gray-800 text-sm">📊 সনদ বিভাজন</span></div><div class="card-body" id="ov-breakdown"></div></div>
+      </div>
+    </div>
+
+    <!-- ALL APPS -->
+    <div class="page" id="p-apps">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+        <h2 class="text-xl font-bold text-gray-800">📋 সকল আবেদন</h2>
+        <div class="flex gap-2 flex-wrap">
+          <select class="form-input" style="width:auto" id="f-status" onchange="renderAppsTable()"><option value="">সকল স্ট্যাটাস</option><option value="pending">অপেক্ষমাণ</option><option value="approved">অনুমোদিত</option><option value="rejected">বাতিল</option></select>
+          <select class="form-input" style="width:auto" id="f-type" onchange="renderAppsTable()"><option value="">সকল সনদ</option><option value="character">চারিত্রিক</option><option value="death">মৃত্যু</option><option value="residence">নাগরিক</option><option value="income">আয়</option><option value="birth">জন্ম</option><option value="inheritance">ওয়ারিশ</option></select>
+        </div>
+      </div>
+      <div class="card"><div style="overflow-x:auto;"><table><thead><tr><th>আবেদন ID</th><th>আবেদনকারী</th><th>সনদের ধরন</th><th>তারিখ</th><th>স্ট্যাটাস</th><th>কার্যক্রম</th></tr></thead><tbody id="apps-tbody"></tbody></table></div></div>
+    </div>
+
+    <!-- PENDING -->
+    <div class="page" id="p-pending">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-gray-800">⏳ অপেক্ষমাণ আবেদন</h2>
+      </div>
+      <div id="pending-list"></div>
+    </div>
+
+    <!-- USERS -->
+    <div class="page" id="p-users">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+        <h2 class="text-xl font-bold text-gray-800">👥 নিবন্ধিত নাগরিক / Registered Citizens</h2>
+        <button onclick="show('admin-apply')" class="btn btn-g">✍️ নাগরিকের পক্ষে আবেদন</button>
+      </div>
+      <!-- Search bar for users -->
+      <div class="card mb-4">
+        <div class="card-body" style="padding:.9rem 1.2rem;">
+          <div class="flex gap-3 flex-wrap">
+            <div style="position:relative;flex:1;min-width:180px;">
+              <svg style="position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:#9ca3af;" width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              <input type="text" id="search-users" class="form-input" style="padding-left:2.3rem;" placeholder="নাম, মোবাইল বা NID দিয়ে খুঁজুন / Search by name, mobile, NID..." oninput="filterUsers()">
+            </div>
+            <select id="filter-verified" class="form-input" style="width:auto;min-width:130px;" onchange="filterUsers()">
+              <option value="">সকল / All</option>
+              <option value="true">✅ যাচাইকৃত</option>
+              <option value="false">⏳ অযাচাইকৃত</option>
+            </select>
+            <button onclick="clearUserFilter()" class="btn btn-outline" style="padding:.5rem .9rem;">↺ রিসেট</button>
+          </div>
+        </div>
+      </div>
+      <div class="card"><div style="overflow-x:auto;"><table><thead><tr><th>ID</th><th>নাম (বাংলা)</th><th>Name</th><th>মোবাইল</th><th>NID</th><th>ইউনিয়ন</th><th>যাচাই</th><th>কার্যক্রম</th></tr></thead><tbody id="users-tbody"></tbody></table></div></div>
+    </div>
+
+    <!-- ADMIN APPLY FOR USER -->
+    <div class="page" id="p-admin-apply">
+      <div class="mb-5">
+        <h2 class="text-xl font-bold text-gray-800">✍️ নাগরিকের পক্ষে সনদের আবেদন</h2>
+        <p class="text-gray-400 text-sm mt-1">নাগরিক নির্বাচন করুন এবং তার পক্ষে সনদের আবেদন জমা দিন</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+        <!-- Step 1: Select user -->
+        <div class="card col-span-1">
+          <div class="card-hdr"><span class="font-bold text-gray-800 text-sm">👤 ধাপ ১: নাগরিক নির্বাচন</span></div>
+          <div class="card-body space-y-3">
+            <input type="text" id="aa-search" class="form-input" placeholder="নাম বা মোবাইল দিয়ে খুঁজুন..." oninput="filterAAUsers()">
+            <div id="aa-user-list" style="max-height:360px;overflow-y:auto;" class="space-y-2"></div>
+          </div>
+        </div>
+        <!-- Step 2+3: Selected user info + form -->
+        <div class="col-span-2 space-y-4">
+          <!-- Selected user card -->
+          <div id="aa-selected-card" class="card hidden">
+            <div class="card-hdr" style="background:linear-gradient(135deg,var(--g),#004d38);">
+              <span class="text-white font-bold text-sm">✅ নির্বাচিত নাগরিক</span>
+              <button onclick="clearAAUser()" class="text-white text-sm opacity-70 hover:opacity-100">পরিবর্তন করুন ✕</button>
+            </div>
+            <div class="card-body" id="aa-user-info"></div>
+          </div>
+          <!-- Application form -->
+          <div class="card" id="aa-form-card">
+            <div class="card-hdr"><span class="font-bold text-gray-800 text-sm">📝 ধাপ ২: সনদ ও উদ্দেশ্য নির্বাচন</span></div>
+            <div class="card-body space-y-4">
+              <div id="aa-no-user" class="text-center text-gray-400 py-8">← বামে থেকে একজন নাগরিক নির্বাচন করুন</div>
+              <div id="aa-form-fields" class="hidden space-y-4">
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">সনদের ধরন *</label>
+                  <div class="grid grid-cols-2 gap-2" id="aa-cert-types">
+                    <!-- injected by JS -->
+                  </div>
+                </div>
+                <div id="aa-extra-fields"></div>
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-1.5">উদ্দেশ্য *</label>
+                  <input type="text" id="aa-purpose" class="form-input" placeholder="যেমন: চাকরির আবেদন, ব্যাংক লোন, ভিসা...">
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-1.5">বিশেষ মন্তব্য (ঐচ্ছিক)</label>
+                  <textarea id="aa-note" class="form-input" rows="2" placeholder="অতিরিক্ত তথ্য..."></textarea>
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-1.5">সনদের ভাষা</label>
+                  <select id="aa-lang" class="form-input">
+                    <option value="bn">বাংলা (Bengali)</option>
+                    <option value="en">English (ইংরেজি)</option>
+                    <option value="both">উভয় (Bilingual)</option>
+                  </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <button onclick="submitAAApp(false)" class="btn btn-gd py-2.5">📥 আবেদন জমা দিন (Pending)</button>
+                  <button onclick="submitAAApp(true)" class="btn btn-g py-2.5">✅ সরাসরি অনুমোদন করুন</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUDIT LOG -->
+    <div class="page" id="p-audit">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-gray-800">📝 অডিট লগ</h2>
+      </div>
+      <div class="card"><div class="card-body" id="audit-list" style="max-height:520px;overflow-y:auto;"></div></div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="page" id="p-reports">
+      <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">📈 রিপোর্ট ও পরিসংখ্যান / Reports & Statistics</h2>
+          <p class="text-gray-400 text-xs mt-1">সিস্টেমের সম্পূর্ণ বিশ্লেষণ · Full system analytics</p>
+        </div>
+      </div>
+      <div class="grid md:grid-cols-4 gap-4 mb-5" id="rep-stats"></div>
+      <div class="grid md:grid-cols-2 gap-5 mb-5">
+        <div class="card">
+          <div class="card-hdr"><span class="font-bold text-gray-800 text-sm">🍩 স্ট্যাটাস বিভাজন / Status Distribution</span></div>
+          <div class="card-body" style="display:flex;align-items:center;gap:1.2rem;">
+            <div style="width:150px;height:150px;flex-shrink:0;"><canvas id="adminStatusChart"></canvas></div>
+            <div style="flex:1;" id="admin-chart-legend"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><span class="font-bold text-gray-800 text-sm">📊 সনদ প্রকার / Certificate Types</span></div>
+          <div class="card-body" style="height:190px;"><canvas id="adminTypeChart"></canvas></div>
+        </div>
+      </div>
+      <div class="card"><div class="card-hdr"><span class="font-bold text-gray-800">📋 বিস্তারিত বিশ্লেষণ / Detailed Breakdown</span></div><div class="card-body" id="rep-breakdown"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEW MODAL -->
+<div class="modal hidden" id="rev-modal">
+  <div class="modal-box">
+    <div class="modal-hdr"><span class="text-white font-bold text-base">📋 আবেদন পর্যালোচনা</span><button onclick="closeModal('rev-modal')" class="text-white text-2xl opacity-80 hover:opacity-100">×</button></div>
+    <div id="rev-body" class="p-6"></div>
+  </div>
+</div>
+
+<!-- USER DETAIL MODAL -->
+<div class="modal hidden" id="user-modal">
+  <div class="modal-box">
+    <div class="modal-hdr"><span class="text-white font-bold">👤 নাগরিকের বিবরণ</span><button onclick="closeModal('user-modal')" class="text-white text-2xl opacity-80 hover:opacity-100">×</button></div>
+    <div id="user-modal-body" class="p-6"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// PREDEFINED DATA (no server / JSON file dependency)
+// ══════════════════════════════════════════════════════
+const ADMINS = [
+  { id:'ADM001', govId:'GOV-1234-ABCD', name:'মোঃ আবুল কাশেম চৌধুরী', nameEn:'Md. Abul Kashem Chowdhury', role:'chairman', union:'উত্তর শাহবাজপুর ইউনিয়ন', pass:'admin123' },
+  { id:'ADM002', govId:'GOV-5678-EFGH', name:'মোঃ রফিকুল ইসলাম',        nameEn:'Md. Rafiqul Islam',          role:'secretary', union:'উত্তর শাহবাজপুর ইউনিয়ন', pass:'sec123' },
+  { id:'ADM003', govId:'GOV-9999-ZZZZ', name:'সরকারি পর্যবেক্ষক',       nameEn:'Govt Monitor Officer',       role:'monitor',   union:'সকল ইউনিয়ন',             pass:'mon123' },
+];
+
+// Predefined citizens — shown in users table + admin-apply list
+let USERS = [
+  { id:'USR001', nameBn:'মোঃ রহিম উদ্দিন',    nameEn:'Md. Rahim Uddin',    fatherBn:'মোঃ করিম উদ্দিন',  fatherEn:'Md. Karim Uddin',   motherBn:'বেগম রোকেয়া',  mobile:'01712345678', nid:'1234567890123', dob:'1985-03-15', gender:'পুরুষ', addressBn:'গ্রাম: উত্তরপাড়া, ডাক: শাহবাজপুর', union:'উত্তর শাহবাজপুর ইউনিয়ন', verified:true, createdAt:'2024-01-10T08:00:00Z' },
+  { id:'USR002', nameBn:'ফাতেমা বেগম',         nameEn:'Fatema Begum',       fatherBn:'মোঃ হাসান আলী',    fatherEn:'Md. Hasan Ali',      motherBn:'জোবেদা বেগম',   mobile:'01812345678', nid:'9876543210123', dob:'1990-07-22', gender:'মহিলা', addressBn:'গ্রাম: দক্ষিণপাড়া, ডাক: শাহবাজপুর', union:'উত্তর শাহবাজপুর ইউনিয়ন', verified:true, createdAt:'2024-01-12T09:00:00Z' },
+  { id:'USR003', nameBn:'মোঃ জহিরুল ইসলাম',  nameEn:'Md. Zahirul Islam',  fatherBn:'মোঃ নুরুল ইসলাম',  fatherEn:'Md. Nurul Islam',    motherBn:'হামিদা বেগম',   mobile:'01912345678', nid:'1122334455667', dob:'1978-11-05', gender:'পুরুষ', addressBn:'গ্রাম: পূর্বপাড়া, ডাক: শাহবাজপুর', union:'উত্তর শাহবাজপুর ইউনিয়ন', verified:true, createdAt:'2024-02-01T10:00:00Z' },
+  { id:'USR004', nameBn:'রাবেয়া খাতুন',        nameEn:'Rabeya Khatun',      fatherBn:'মোঃ আব্দুল মালেক', fatherEn:'Md. Abdul Malek',    motherBn:'সালেহা বেগম',   mobile:'01612345678', nid:'5544332211009', dob:'1995-05-18', gender:'মহিলা', addressBn:'গ্রাম: পশ্চিমপাড়া, ডাক: শাহবাজপুর', union:'উত্তর শাহবাজপুর ইউনিয়ন', verified:true, createdAt:'2024-02-15T11:00:00Z' },
+  { id:'USR005', nameBn:'মোঃ কামাল হোসেন',    nameEn:'Md. Kamal Hossain',  fatherBn:'মোঃ বাদল মিয়া',    fatherEn:'Md. Badal Mia',      motherBn:'নুরজাহান বেগম', mobile:'01512345678', nid:'7788990011223', dob:'1982-09-30', gender:'পুরুষ', addressBn:'গ্রাম: মধ্যপাড়া, ডাক: শাহবাজপুর', union:'উত্তর শাহবাজপুর ইউনিয়ন', verified:false, createdAt:'2024-03-01T12:00:00Z' },
+];
+
+// Predefined applications
+let APPS = [
+  { id:'APP-100001', userId:'USR001', type:'character', typeName:'চারিত্রিক সনদপত্র', typeIcon:'📜', userName:'মোঃ রহিম উদ্দিন', userNameEn:'Md. Rahim Uddin', userNID:'1234567890123', userMobile:'01712345678', userFather:'মোঃ করিম উদ্দিন', userMother:'বেগম রোকেয়া', userAddress:'গ্রাম: উত্তরপাড়া, ডাক: শাহবাজপুর', userUnion:'উত্তর শাহবাজপুর ইউনিয়ন', purpose:'চাকরির আবেদন', note:'', status:'approved', appliedAt:'2024-03-10T09:00:00Z', updatedAt:'2024-03-11T10:00:00Z', approvedAt:'2024-03-11T10:00:00Z', approvedBy:'মোঃ আবুল কাশেম চৌধুরী', adminComment:'সত্যায়িত করা হলো', extraData:{}, lang:'bn', timeline:[{time:'2024-03-10T09:00:00Z',action:'আবেদন জমা দেওয়া হয়েছে',by:'মোঃ রহিম উদ্দিন'},{time:'2024-03-11T10:00:00Z',action:'✅ অনুমোদিত',by:'মোঃ আবুল কাশেম চৌধুরী (চেয়ারম্যান)'}] },
+  { id:'APP-100002', userId:'USR002', type:'residence', typeName:'নাগরিক সনদপত্র', typeIcon:'🏠', userName:'ফাতেমা বেগম', userNameEn:'Fatema Begum', userNID:'9876543210123', userMobile:'01812345678', userFather:'মোঃ হাসান আলী', userMother:'জোবেদা বেগম', userAddress:'গ্রাম: দক্ষিণপাড়া, ডাক: শাহবাজপুর', userUnion:'উত্তর শাহবাজপুর ইউনিয়ন', purpose:'পাসপোর্ট আবেদন', note:'', status:'pending', appliedAt:'2024-03-15T10:00:00Z', updatedAt:'2024-03-15T10:00:00Z', approvedAt:null, approvedBy:'', adminComment:'', extraData:{}, lang:'both', timeline:[{time:'2024-03-15T10:00:00Z',action:'আবেদন জমা দেওয়া হয়েছে',by:'ফাতেমা বেগম'}] },
+  { id:'APP-100003', userId:'USR003', type:'income', typeName:'বার্ষিক আয় সনদ', typeIcon:'💰', userName:'মোঃ জহিরুল ইসলাম', userNameEn:'Md. Zahirul Islam', userNID:'1122334455667', userMobile:'01912345678', userFather:'মোঃ নুরুল ইসলাম', userMother:'হামিদা বেগম', userAddress:'গ্রাম: পূর্বপাড়া, ডাক: শাহবাজপুর', userUnion:'উত্তর শাহবাজপুর ইউনিয়ন', purpose:'ব্যাংক লোন', note:'জরুরি', status:'pending', appliedAt:'2024-03-18T11:00:00Z', updatedAt:'2024-03-18T11:00:00Z', approvedAt:null, approvedBy:'', adminComment:'', extraData:{'annual-income':'120000','income-source':'কৃষি'}, lang:'en', timeline:[{time:'2024-03-18T11:00:00Z',action:'আবেদন জমা দেওয়া হয়েছে',by:'মোঃ জহিরুল ইসলাম'}] },
+  { id:'APP-100004', userId:'USR004', type:'death', typeName:'মৃত্যু সনদপত্র', typeIcon:'🕊️', userName:'রাবেয়া খাতুন', userNameEn:'Rabeya Khatun', userNID:'5544332211009', userMobile:'01612345678', userFather:'মোঃ আব্দুল মালেক', userMother:'সালেহা বেগম', userAddress:'গ্রাম: পশ্চিমপাড়া, ডাক: শাহবাজপুর', userUnion:'উত্তর শাহবাজপুর ইউনিয়ন', purpose:'সম্পত্তি হস্তান্তর', note:'', status:'rejected', appliedAt:'2024-03-05T08:00:00Z', updatedAt:'2024-03-06T09:00:00Z', approvedAt:null, approvedBy:'', adminComment:'তথ্য অসম্পূর্ণ', extraData:{'deceased-name-bn':'মোঃ সিরাজুল ইসলাম','deceased-name-en':'Md. Sirajul Islam','death-date':'২০২৪-০২-২০','death-cause-bn':'বার্ধক্য'}, lang:'bn', timeline:[{time:'2024-03-05T08:00:00Z',action:'আবেদন জমা দেওয়া হয়েছে',by:'রাবেয়া খাতুন'},{time:'2024-03-06T09:00:00Z',action:'❌ বাতিল - তথ্য অসম্পূর্ণ',by:'মোঃ রফিকুল ইসলাম'}] },
+];
+
+let AUDIT = [
+  { id:'LOG001', time:'2024-03-11T10:00:00Z', action:'আবেদন অনুমোদন: APP-100001 - মোঃ রহিম উদ্দিন', by:'মোঃ আবুল কাশেম চৌধুরী', role:'chairman', type:'approve' },
+  { id:'LOG002', time:'2024-03-06T09:00:00Z', action:'আবেদন বাতিল: APP-100004', by:'মোঃ রফিকুল ইসলাম', role:'secretary', type:'reject' },
+  { id:'LOG003', time:'2024-03-18T11:00:00Z', action:'নতুন আবেদন: APP-100003 (বার্ষিক আয় সনদ) - মোঃ জহিরুল ইসলাম', by:'মোঃ জহিরুল ইসলাম', role:'user', type:'apply' },
+  { id:'LOG004', time:'2024-03-15T10:00:00Z', action:'নতুন আবেদন: APP-100002 (নাগরিক সনদ) - ফাতেমা বেগম', by:'ফাতেমা বেগম', role:'user', type:'apply' },
+];
+
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+let adminMe = null;
+let aaSelectedUser = null;
+let aaSelectedType = null;
+
+const typeLabels = { character:'📜 চারিত্রিক সনদ', death:'🕊️ মৃত্যু সনদ', residence:'🏠 নাগরিক সনদ', income:'💰 আয় সনদ', birth:'👶 জন্ম নিবন্ধন', inheritance:'📋 ওয়ারিশ সনদ' };
+const typeIcons  = { character:'📜', death:'🕊️', residence:'🏠', income:'💰', birth:'👶', inheritance:'📋' };
+const typeNamesBn= { character:'চারিত্রিক সনদপত্র', death:'মৃত্যু সনদপত্র', residence:'নাগরিক সনদপত্র', income:'বার্ষিক আয় সনদ', birth:'জন্ম নিবন্ধন সনদ', inheritance:'ওয়ারিশ সনদপত্র' };
+const roleLabels = { chairman:'চেয়ারম্যান', secretary:'ইউপি সচিব', monitor:'সরকারি পর্যবেক্ষক' };
+
+// ══════════════════════════════════════════════════════
+// LOGIN (offline — compare against predefined ADMINS)
+// ══════════════════════════════════════════════════════
+function fillAdmin(id, role, pass) {
+  document.getElementById('al-govid').value = id;
+  document.getElementById('al-role').value = role;
+  document.getElementById('al-pass').value = pass;
+}
+
+async function adminLogin() {
+  const govId    = document.getElementById('al-govid').value.trim();
+  const role     = document.getElementById('al-role').value;
+  const password = document.getElementById('al-pass').value;
+  if (!govId || !role || !password) { showNotif('সকল তথ্য পূরণ করুন', 'e'); return; }
+
+  const btn = document.getElementById('al-btn');
+  btn.innerHTML = '<span class="spinner"></span> যাচাই হচ্ছে...'; btn.disabled = true;
+
+  // Try server first; fallback to offline predefined data
+  try {
+    const r = await fetch('/api/auth/admin-login', {
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ govId, role, password })
+    });
+    if (r.ok) {
+      const data = await r.json();
+      adminMe = data.admin;
+      showAdminPanel(); showNotif(`স্বাগতম, ${adminMe.name}! 🛡️`, 's'); return;
+    }
+  } catch(_) {}
+
+  // Offline fallback
+  const found = ADMINS.find(a => a.govId === govId && a.role === role && a.pass === password);
+  if (!found) { showNotif('ভুল তথ্য বা অননুমোদিত প্রবেশ', 'e'); btn.innerHTML='🔐 প্রবেশ করুন →'; btn.disabled=false; return; }
+  adminMe = found;
+  addAudit(`অ্যাডমিন লগইন: ${adminMe.name} (${adminMe.role})`, adminMe.name, adminMe.role, 'admin');
+  showAdminPanel();
+  showNotif(`স্বাগতম, ${adminMe.name}! 🛡️`, 's');
+}
+
+async function checkSession() {
+  try {
+    const r = await fetch('/api/auth/me', { credentials:'include' });
+    if (r.ok) {
+      const data = await r.json();
+      if (['chairman','secretary','monitor'].includes(data.sessionRole)) {
+        adminMe = data; showAdminPanel(); return;
+      }
+    }
+  } catch(_) {}
+}
+
+function showAdminPanel() {
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('admin-panel').classList.remove('hidden');
+  document.getElementById('sb-name').textContent = adminMe.name || 'অ্যাডমিন';
+  document.getElementById('sb-role').textContent = roleLabels[adminMe.role || adminMe.sessionRole] || adminMe.role;
+  refreshAll();
+  setInterval(tick, 1000); tick();
+  initAAUserList();
+}
+
+function tick() {
+  const n = new Date();
+  const el = document.getElementById('a-clock');
+  if (el) el.textContent = n.toLocaleString('bn-BD');
+  const od = document.getElementById('ov-date');
+  if (od) od.textContent = n.toLocaleDateString('bn-BD',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+
+// ══════════════════════════════════════════════════════
+// DATA HELPERS (try server, fallback to local arrays)
+// ══════════════════════════════════════════════════════
+async function fetchApps(params='') {
+  try {
+    const r = await fetch('/api/admin/applications?'+params, { credentials:'include' });
+    if (r.ok) { const d = await r.json(); return d; }
+  } catch(_) {}
+  // offline filter
+  let apps = [...APPS];
+  if (params.includes('status=')) {
+    const s = params.match(/status=([^&]+)/)?.[1];
+    if (s === 'pending') apps = apps.filter(a => a.status==='pending'||a.status==='processing');
+    else if (s) apps = apps.filter(a=>a.status===s);
+  }
+  if (params.includes('type='))   { const t = params.match(/type=([^&]+)/)?.[1];   if(t) apps = apps.filter(a=>a.type===t); }
+  return apps;
+}
+
+async function fetchUsers() {
+  try {
+    const r = await fetch('/api/admin/users', { credentials:'include' });
+    if (r.ok) return await r.json();
+  } catch(_) {}
+  return USERS;
+}
+
+async function fetchApp(id) {
+  try {
+    const r = await fetch(`/api/admin/application/${id}`, { credentials:'include' });
+    if (r.ok) return await r.json();
+  } catch(_) {}
+  return APPS.find(a=>a.id===id) || null;
+}
+
+async function fetchDashboard() {
+  try {
+    const r = await fetch('/api/admin/dashboard', { credentials:'include' });
+    if (r.ok) return await r.json();
+  } catch(_) {}
+  const total=APPS.length, pending=APPS.filter(a=>a.status==='pending').length, approved=APPS.filter(a=>a.status==='approved').length, rejected=APPS.filter(a=>a.status==='rejected').length;
+  const tc={}; APPS.forEach(a=>{tc[a.type]=(tc[a.type]||0)+1;});
+  return { totalApps:total, pending, approved, rejected, processing:0, totalUsers:USERS.length, verifiedUsers:USERS.filter(u=>u.verified).length, recentApps:APPS.slice(0,10), typeCounts:tc };
+}
+
+function addAudit(action, by, role, type, meta={}) {
+  AUDIT.unshift({ id:'LOG'+Date.now(), time:new Date().toISOString(), action, by, role, type, meta });
+  if (AUDIT.length > 200) AUDIT.splice(200);
+}
+
+// ══════════════════════════════════════════════════════
+// OVERVIEW
+// ══════════════════════════════════════════════════════
+async function refreshAll() {
+  const [dash, users] = await Promise.all([fetchDashboard(), fetchUsers()]);
+  // Sync USERS offline array from server
+  if (users && users.length) {
+    USERS.length = 0;
+    users.forEach(u => USERS.push(u));
+  }
+  // Sync APPS from recent apps
+  if (dash.recentApps && dash.recentApps.length) {
+    dash.recentApps.forEach(a => {
+      const i = APPS.findIndex(x => x.id === a.id);
+      if (i >= 0) APPS[i] = { ...APPS[i], ...a };
+      else APPS.push(a);
+    });
+  }
+  updateOverview(dash);
+  renderOvRecent(dash.recentApps || APPS.slice(0,6));
+  renderOvBreakdown(dash);
+  await renderPending();
+  renderAuditLog();
+  // Only re-render users page if currently visible
+  if (document.getElementById('p-users')?.classList.contains('on')) {
+    await renderUsersTable(USERS);
+  }
+}
+
+function updateOverview(d) {
+  document.getElementById('ov-tot').textContent = d.totalApps || 0;
+  document.getElementById('ov-pnd').textContent = d.pending || 0;
+  document.getElementById('ov-apv').textContent = d.approved || 0;
+  document.getElementById('ov-usr').textContent = d.totalUsers || 0;
+  document.getElementById('pend-badge').textContent = d.pending || 0;
+  // Update date
+  const dateEl = document.getElementById('ov-date');
+  if (dateEl) dateEl.textContent = new Date().toLocaleDateString('bn-BD', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+}
+
+function renderOvRecent(apps) {
+  const c = document.getElementById('ov-recent');
+  if (!apps.length) { c.innerHTML='<div class="text-center text-gray-400 py-4 text-sm">কোনো আবেদন নেই</div>'; return; }
+  c.innerHTML = apps.slice(0,6).map(a=>`
+    <div class="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+      <div class="flex items-center gap-2">
+        <span>${a.typeIcon}</span>
+        <div><div class="text-sm font-medium">${a.userName||'—'}</div><div class="text-xs text-gray-400">${a.id}</div></div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="badge ${getBadge(a.status)}">${getLabel(a.status)}</span>
+        ${a.status==='pending'?`<button onclick="openReview('${a.id}')" class="btn btn-gd" style="padding:.25rem .5rem;font-size:.72rem;">পর্যালোচনা</button>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function renderOvBreakdown(d) {
+  const counts = d.typeCounts||{}, total=d.totalApps||1;
+  const c = document.getElementById('ov-breakdown');
+  if (!d.totalApps) { c.innerHTML='<div class="text-center text-gray-400 py-4 text-sm">তথ্য নেই</div>'; return; }
+  c.innerHTML = Object.entries(typeLabels).map(([type,label])=>{
+    const n=counts[type]||0, pct=(n/total*100).toFixed(1);
+    return `<div class="mb-3"><div class="flex justify-between text-sm mb-1"><span>${label}</span><span class="font-semibold">${n}</span></div><div style="height:7px;background:#f1f5f2;border-radius:4px;overflow:hidden;"><div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--g),var(--gd));border-radius:4px;transition:width .5s;"></div></div></div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════
+// APPS TABLE
+// ══════════════════════════════════════════════════════
+async function renderAppsTable() {
+  const status = document.getElementById('f-status')?.value || '';
+  const type   = document.getElementById('f-type')?.value || '';
+  let params=''; if(status) params+=`status=${status}&`; if(type) params+=`type=${type}`;
+  const tbody = document.getElementById('apps-tbody');
+  if (!tbody) return;
+  tbody.innerHTML='<tr><td colspan="6" class="text-center text-gray-400 py-4">লোড হচ্ছে...</td></tr>';
+  const apps = await fetchApps(params);
+  if (!apps.length) { tbody.innerHTML='<tr><td colspan="6" class="text-center text-gray-400 py-8">কোনো আবেদন নেই</td></tr>'; return; }
+  tbody.innerHTML = apps.map(a=>`
+    <tr>
+      <td><span class="font-mono text-xs text-blue-700">${a.id}</span></td>
+      <td><div class="font-medium text-sm">${a.userName||'—'}</div><div class="text-xs text-gray-400">${a.userNID||''}</div></td>
+      <td class="text-sm">${a.typeIcon} ${typeLabels[a.type]||a.type}</td>
+      <td class="text-xs text-gray-500">${new Date(a.appliedAt).toLocaleDateString('bn-BD')}</td>
+      <td><span class="badge ${getBadge(a.status)}">${getLabel(a.status)}</span></td>
+      <td>
+        <div class="flex gap-1">
+          <button onclick="openReview('${a.id}')" class="btn btn-gd" style="padding:.3rem .5rem;font-size:.75rem;">বিবরণ</button>
+          ${a.status==='approved'?`<button onclick="openCert('${a.id}')" class="btn btn-g" style="padding:.3rem .5rem;font-size:.75rem;">PDF</button>`:''}
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+// ══════════════════════════════════════════════════════
+// PENDING
+// ══════════════════════════════════════════════════════
+async function renderPending() {
+  const c = document.getElementById('pending-list');
+  if (!c) return;
+  c.innerHTML = '<div class="text-center text-gray-400 py-8">লোড হচ্ছে... / Loading...</div>';
+  const pending = await fetchApps('status=pending');
+  if (!pending.length) { c.innerHTML='<div class="text-center text-gray-400 py-10">✅ কোনো অপেক্ষমাণ আবেদন নেই</div>'; return; }
+  c.innerHTML = pending.map(a=>`
+    <div class="card mb-4 p-5">
+      <div class="flex items-start justify-between flex-wrap gap-3">
+        <div class="flex items-center gap-3">
+          <span class="text-3xl">${a.typeIcon}</span>
+          <div>
+            <div class="font-bold text-gray-800">${typeLabels[a.type]||a.type}</div>
+            <div class="text-sm text-gray-500">আবেদনকারী: <strong>${a.userName}</strong> · ${a.userMobile||''}</div>
+            <div class="text-xs text-gray-400">${a.id} · ${new Date(a.appliedAt).toLocaleString('bn-BD')}</div>
+          </div>
+        </div>
+        <div class="flex gap-2 flex-wrap">
+          <button onclick="openReview('${a.id}')" class="btn btn-gd">🔍 পর্যালোচনা</button>
+          <button onclick="quickAction('${a.id}','approve')" class="btn btn-g">✅ অনুমোদন</button>
+          <button onclick="quickAction('${a.id}','reject')" class="btn btn-r">❌ বাতিল</button>
+        </div>
+      </div>
+      <div class="mt-3 pt-3 border-t border-gray-100 flex gap-4 text-xs text-gray-500 flex-wrap">
+        <span>NID: ${a.userNID||'—'}</span><span>উদ্দেশ্য: ${a.purpose||'—'}</span><span>ইউনিয়ন: ${a.userUnion||'—'}</span>
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════
+// REVIEW MODAL
+// ══════════════════════════════════════════════════════
+async function openReview(appId) {
+  let app = await fetchApp(appId);
+  if (!app) return;
+  const isMonitor = (adminMe.role||adminMe.sessionRole) === 'monitor';
+  document.getElementById('rev-body').innerHTML = `
+    <div class="space-y-4">
+      <div class="flex items-center gap-3 p-4 rounded-xl bg-green-50">
+        <span class="text-4xl">${app.typeIcon}</span>
+        <div class="flex-1"><div class="font-bold text-gray-800 text-lg">${typeLabels[app.type]||app.type}</div><div class="text-sm text-gray-500 font-mono">${app.id}</div></div>
+        <span class="badge ${getBadge(app.status)}">${getLabel(app.status)}</span>
+      </div>
+      <div class="grid grid-cols-2 gap-2 text-sm">
+        ${[['নাম (বাংলা)',app.userName],['Name',app.userNameEn],['NID',app.userNID],['মোবাইল',app.userMobile],['পিতা',app.userFather],['মাতা',app.userMother],['উদ্দেশ্য',app.purpose],['ইউনিয়ন',app.userUnion]].filter(([,v])=>v).map(([k,v])=>`<div class="p-2 bg-gray-50 rounded"><div class="text-xs text-gray-400">${k}</div><div class="font-semibold text-gray-700">${v}</div></div>`).join('')}
+      </div>
+      ${app.userAddress?`<div class="p-2 bg-gray-50 rounded text-sm"><span class="text-xs text-gray-400">ঠিকানা: </span>${app.userAddress}</div>`:''}
+      ${Object.keys(app.extraData||{}).length?`<div><h4 class="font-bold text-gray-700 mb-2 text-sm">📋 অতিরিক্ত তথ্য</h4><div class="grid grid-cols-2 gap-2">${Object.entries(app.extraData).map(([k,v])=>`<div class="p-2 bg-blue-50 rounded text-xs"><div class="text-gray-400">${k}</div><div class="font-medium">${v||'—'}</div></div>`).join('')}</div></div>`:''}
+      <div><h4 class="font-bold text-gray-700 mb-2 text-sm">🕐 টাইমলাইন</h4>${(app.timeline||[]).map(t=>`<div class="flex gap-3 text-xs mb-2 p-2 bg-gray-50 rounded"><div class="w-2 h-2 rounded-full bg-green-500 mt-1.5 flex-shrink-0"></div><div><div class="font-medium">${t.action}</div><div class="text-gray-400">${new Date(t.time).toLocaleString('bn-BD')} · ${t.by}</div></div></div>`).join('')}</div>
+      ${!isMonitor && app.status!=='approved' && app.status!=='rejected' ? `
+        <div class="p-3 bg-blue-50 border border-blue-200 rounded"><h4 class="font-semibold text-blue-800 text-sm mb-2">✏️ তথ্য সম্পাদনা</h4><div class="grid grid-cols-2 gap-2"><div><label class="text-xs text-gray-500 block mb-0.5">নাম (বাংলা)</label><input class="form-input text-sm" id="ed-nameBn" value="${app.userName||''}"></div><div><label class="text-xs text-gray-500 block mb-0.5">Name (EN)</label><input class="form-input text-sm" id="ed-nameEn" value="${app.userNameEn||''}"></div></div></div>
+        <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">💬 অ্যাডমিন মন্তব্য</label><textarea class="form-input" id="rev-comment" rows="2" placeholder="অনুমোদন/বাতিলের কারণ..."></textarea></div>
+        <div class="flex gap-3">
+          <button onclick="doAction('${app.id}','approve')" class="btn btn-g flex-1 py-2.5">✅ অনুমোদন করুন</button>
+          <button onclick="doAction('${app.id}','reject')" class="btn btn-r flex-1 py-2.5">❌ বাতিল করুন</button>
+        </div>`
+      : app.status==='approved' ? `<button onclick="openCert('${app.id}')" class="btn btn-g w-full py-2.5">📄 সনদ দেখুন / PDF</button>`
+      : `<div class="p-3 bg-red-50 border border-red-200 text-sm text-red-700 rounded">এই আবেদন বাতিল করা হয়েছে। ${app.adminComment?'কারণ: '+app.adminComment:''}</div>`}
+    </div>`;
+  document.getElementById('rev-modal').classList.remove('hidden');
+}
+
+async function doAction(appId, action) {
+  const comment     = document.getElementById('rev-comment')?.value || '';
+  const editedName  = document.getElementById('ed-nameBn')?.value || '';
+  const editedNameEn= document.getElementById('ed-nameEn')?.value || '';
+
+  // Try server
+  let ok = false;
+  try {
+    const r = await fetch(`/api/admin/${action}`, { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body:JSON.stringify({appId,comment,editedName,editedNameEn}) });
+    ok = r.ok;
+  } catch(_) {}
+
+  // Offline fallback
+  const idx = APPS.findIndex(a=>a.id===appId);
+  if (idx>=0) {
+    APPS[idx].status = action==='approve'?'approved':'rejected';
+    if (editedName)   APPS[idx].userName   = editedName;
+    if (editedNameEn) APPS[idx].userNameEn = editedNameEn;
+    APPS[idx].adminComment = comment;
+    APPS[idx].updatedAt = new Date().toISOString();
+    if (action==='approve') { APPS[idx].approvedAt=new Date().toISOString(); APPS[idx].approvedBy=adminMe.name; }
+    APPS[idx].timeline.push({ time:new Date().toISOString(), action: action==='approve'?`✅ অনুমোদিত${comment?' - '+comment:''}`:`❌ বাতিল - ${comment||'কারণ উল্লেখ নেই'}`, by:`${adminMe.name} (${roleLabels[adminMe.role]||adminMe.role})` });
+  }
+  addAudit(`${action==='approve'?'আবেদন অনুমোদন':'আবেদন বাতিল'}: ${appId}`, adminMe.name, adminMe.role, action);
+
+  closeModal('rev-modal');
+  showNotif(action==='approve'?`✅ আবেদন ${appId} অনুমোদিত!`:`আবেদন ${appId} বাতিল`, action==='approve'?'s':'e');
+  refreshAll();
+}
+
+async function quickAction(appId, action) {
+  let comment = '';
+  if (action === 'reject') comment = prompt('বাতিলের কারণ লিখুন / Reason for rejection:') || 'অপর্যাপ্ত তথ্য';
+  try {
+    await fetch(`/api/admin/${action}`, {
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({appId, comment})
+    });
+  } catch(_) {}
+
+  // Offline fallback — always update APPS array
+  const i = APPS.findIndex(a => a.id === appId);
+  if (i >= 0) {
+    APPS[i].status = action === 'approve' ? 'approved' : 'rejected';
+    APPS[i].adminComment = comment;
+    APPS[i].updatedAt = new Date().toISOString();
+    if (action === 'approve') {
+      APPS[i].approvedAt = new Date().toISOString();
+      APPS[i].approvedBy = adminMe?.name || 'অ্যাডমিন';
+    }
+    APPS[i].timeline = APPS[i].timeline || [];
+    APPS[i].timeline.push({
+      time: new Date().toISOString(),
+      action: action === 'approve' ? `✅ অনুমোদিত${comment?' - '+comment:''}` : `❌ বাতিল - ${comment}`,
+      by: `${adminMe?.name||'অ্যাডমিন'} (${roleLabels[adminMe?.role]||'অ্যাডমিন'})`
+    });
+  }
+  addAudit(`${action==='approve'?'দ্রুত অনুমোদন':'দ্রুত বাতিল'}: ${appId}`, adminMe?.name||'অ্যাডমিন', adminMe?.role||'admin', action);
+  showNotif(action === 'approve' ? `✅ আবেদন ${appId} অনুমোদিত!` : `আবেদন ${appId} বাতিল`, action==='approve'?'s':'e');
+  await renderPending();
+}
+
+
+async function renderUsersTable(users) {
+  if (!users) users = await fetchUsers();
+  const tbody = document.getElementById('users-tbody');
+  if (!tbody) return;
+  if (!users.length) { tbody.innerHTML='<tr><td colspan="8" class="text-center text-gray-400 py-8">কোনো ব্যবহারকারী নেই / No users found</td></tr>'; return; }
+  tbody.innerHTML = users.map(u=>`
+    <tr>
+      <td class="font-mono text-xs text-gray-500">${u.id}</td>
+      <td class="font-semibold text-sm">${u.nameBn||'—'}</td>
+      <td class="text-sm">${u.nameEn||'—'}</td>
+      <td class="text-sm">${u.mobile||'—'}</td>
+      <td class="font-mono text-xs">${u.nid||'—'}</td>
+      <td class="text-xs">${u.union||'—'}</td>
+      <td><span class="badge ${u.verified?'ba':'bp'}">${u.verified?'✅ যাচাই':'⏳ অপেক্ষমাণ'}</span></td>
+      <td>
+        <div class="flex gap-1">
+          <button onclick="viewUser('${u.id}')" class="btn btn-gd" style="padding:.3rem .5rem;font-size:.75rem;">বিবরণ</button>
+          <button onclick="selectAAUserById('${u.id}')" class="btn btn-outline" style="padding:.3rem .5rem;font-size:.75rem;">✍️ আবেদন</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+async function viewUser(userId) {
+  let data = USERS.find(u=>u.id===userId);
+  try {
+    const r = await fetch(`/api/admin/user/${userId}`, { credentials:'include' });
+    if (r.ok) data = await r.json();
+  } catch(_) {}
+  if (!data) return;
+  const userApps = (data && data.applications) ? data.applications : APPS.filter(a=>a.userId===userId);
+  document.getElementById('user-modal-body').innerHTML = `
+    <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+      ${[['নাম',data.nameBn],['Name',data.nameEn],['NID',data.nid],['Mobile',data.mobile],['পিতা',data.fatherBn],['মাতা',data.motherBn],['DOB',data.dob],['ইউনিয়ন',data.union]].map(([k,v])=>`<div class="p-2 bg-gray-50 rounded"><div class="text-xs text-gray-400">${k}</div><div class="font-semibold">${v||'—'}</div></div>`).join('')}
+    </div>
+    <div class="p-2 bg-gray-50 rounded text-sm mb-4"><span class="text-xs text-gray-400">ঠিকানা: </span>${data.addressBn||'—'}</div>
+    <h4 class="font-bold text-gray-700 mb-2">আবেদনের ইতিহাস (${userApps.length}টি)</h4>
+    ${userApps.map(a=>`<div class="flex items-center justify-between py-1.5 border-b text-sm"><span>${a.typeIcon} ${a.typeName}</span><span class="badge ${getBadge(a.status)}">${getLabel(a.status)}</span></div>`).join('')||'<div class="text-gray-400 text-sm">কোনো আবেদন নেই</div>'}
+    <div class="mt-4">
+      <button onclick="closeModal('user-modal');selectAAUserById('${data.id}')" class="btn btn-g w-full py-2">✍️ এই নাগরিকের পক্ষে আবেদন করুন</button>
+    </div>`;
+  document.getElementById('user-modal').classList.remove('hidden');
+}
+
+// ══════════════════════════════════════════════════════
+// ADMIN-APPLY: Apply on behalf of a citizen
+// ══════════════════════════════════════════════════════
+function initAAUserList() {
+  document.getElementById('aa-search').value = '';
+  renderAAUserList(USERS);
+  document.getElementById('aa-cert-types').innerHTML = Object.entries(typeLabels).map(([t,l])=>`
+    <button onclick="selectAAType('${t}')" id="aat-${t}" class="flex items-center gap-2 p-3 rounded-xl border-2 border-gray-200 hover:border-yellow-400 text-left text-sm font-medium transition-all">
+      <span class="text-xl">${typeIcons[t]}</span><span>${l}</span>
+    </button>`).join('');
+}
+
+function renderAAUserList(users) {
+  const c = document.getElementById('aa-user-list');
+  c.innerHTML = users.map(u=>`
+    <button onclick="selectAAUser('${u.id}')" class="w-full text-left p-3 rounded-xl border-2 border-gray-100 hover:border-green-400 hover:bg-green-50 transition-all">
+      <div class="font-semibold text-sm text-gray-800">${u.nameBn}</div>
+      <div class="text-xs text-gray-500">${u.nameEn} · ${u.mobile}</div>
+      <div class="text-xs text-gray-400 mt-0.5">NID: ${u.nid}</div>
+    </button>`).join('');
+}
+
+function filterAAUsers() {
+  const q = document.getElementById('aa-search').value.toLowerCase();
+  const filtered = USERS.filter(u => u.nameBn.includes(q)||u.nameEn.toLowerCase().includes(q)||(u.mobile||'').includes(q));
+  renderAAUserList(filtered);
+}
+
+function selectAAUserById(userId) {
+  show('admin-apply');
+  selectAAUser(userId);
+}
+
+function selectAAUser(userId) {
+  const u = USERS.find(u=>u.id===userId);
+  if (!u) return;
+  aaSelectedUser = u;
+  document.getElementById('aa-selected-card').classList.remove('hidden');
+  document.getElementById('aa-no-user').classList.add('hidden');
+  document.getElementById('aa-form-fields').classList.remove('hidden');
+  document.getElementById('aa-user-info').innerHTML = `
+    <div class="grid grid-cols-2 gap-3 text-sm">
+      <div><span class="text-xs text-gray-400 block">নাম (বাংলা)</span><strong>${u.nameBn}</strong></div>
+      <div><span class="text-xs text-gray-400 block">Name</span><strong>${u.nameEn}</strong></div>
+      <div><span class="text-xs text-gray-400 block">পিতা</span>${u.fatherBn||'—'}</div>
+      <div><span class="text-xs text-gray-400 block">মাতা</span>${u.motherBn||'—'}</div>
+      <div><span class="text-xs text-gray-400 block">NID</span><code>${u.nid}</code></div>
+      <div><span class="text-xs text-gray-400 block">মোবাইল</span>${u.mobile}</div>
+      <div class="col-span-2"><span class="text-xs text-gray-400 block">ঠিকানা</span>${u.addressBn||'—'}</div>
+    </div>`;
+  aaSelectedType = null;
+  document.querySelectorAll('[id^="aat-"]').forEach(b=>b.classList.remove('border-yellow-400','bg-yellow-50'));
+  document.getElementById('aa-extra-fields').innerHTML='';
+  document.getElementById('aa-purpose').value='';
+  document.getElementById('aa-note').value='';
+}
+
+function clearAAUser() {
+  aaSelectedUser = null;
+  document.getElementById('aa-selected-card').classList.add('hidden');
+  document.getElementById('aa-no-user').classList.remove('hidden');
+  document.getElementById('aa-form-fields').classList.add('hidden');
+}
+
+function selectAAType(type) {
+  aaSelectedType = type;
+  document.querySelectorAll('[id^="aat-"]').forEach(b=>b.classList.remove('border-yellow-400','bg-yellow-50'));
+  const btn = document.getElementById('aat-'+type);
+  if(btn) btn.classList.add('border-yellow-400','bg-yellow-50');
+
+  // Extra fields per type
+  const extras = {
+    death: `
+      <div class="grid grid-cols-2 gap-3 p-3 bg-blue-50 rounded-xl border border-blue-100">
+        <div><label class="text-xs font-semibold text-gray-600 block mb-1">মৃত ব্যক্তির নাম (বাংলা) *</label><input class="form-input text-sm" id="ax-deceased-name-bn" placeholder="মৃত ব্যক্তির নাম"></div>
+        <div><label class="text-xs font-semibold text-gray-600 block mb-1">Name of Deceased *</label><input class="form-input text-sm" id="ax-deceased-name-en" placeholder="Deceased name"></div>
+        <div><label class="text-xs font-semibold text-gray-600 block mb-1">মৃত্যুর তারিখ *</label><input type="date" class="form-input text-sm" id="ax-death-date"></div>
+        <div><label class="text-xs font-semibold text-gray-600 block mb-1">মৃত্যুর কারণ *</label><input class="form-input text-sm" id="ax-death-cause-bn" placeholder="যেমন: হৃদরোগ, দুর্ঘটনা..."></div>
+      </div>`,
+    income: `
+      <div class="grid grid-cols-2 gap-3 p-3 bg-blue-50 rounded-xl border border-blue-100">
+        <div><label class="text-xs font-semibold text-gray-600 block mb-1">বার্ষিক আয় (টাকা) *</label><input type="number" class="form-input text-sm" id="ax-annual-income" placeholder="যেমন: 150000"></div>
+        <div><label class="text-xs font-semibold text-gray-600 block mb-1">আয়ের উৎস *</label><input class="form-input text-sm" id="ax-income-source" placeholder="যেমন: কৃষি, ব্যবসা, চাকরি"></div>
+      </div>`,
+    inheritance: `
+      <div class="grid grid-cols-2 gap-3 p-3 bg-blue-50 rounded-xl border border-blue-100">
+        <div class="col-span-2"><label class="text-xs font-semibold text-gray-600 block mb-1">মৃত ব্যক্তির নাম *</label><input class="form-input text-sm" id="ax-deceased-heir-bn" placeholder="যার সম্পত্তির ওয়ারিশ"></div>
+        <div class="col-span-2"><label class="text-xs font-semibold text-gray-600 block mb-1">ওয়ারিশদের নাম</label><textarea class="form-input text-sm" id="ax-heirs" rows="2" placeholder="ওয়ারিশদের তালিকা..."></textarea></div>
+      </div>`,
+  };
+  document.getElementById('aa-extra-fields').innerHTML = extras[type]||'';
+}
+
+async function submitAAApp(autoApprove) {
+  if (!aaSelectedUser) { showNotif('প্রথমে নাগরিক নির্বাচন করুন', 'e'); return; }
+  if (!aaSelectedType)  { showNotif('সনদের ধরন নির্বাচন করুন', 'e'); return; }
+  const purpose = document.getElementById('aa-purpose').value.trim();
+  if (!purpose) { showNotif('উদ্দেশ্য লিখুন', 'e'); return; }
+  const lang = document.getElementById('aa-lang').value;
+
+  // Collect extra data
+  const extraData = {};
+  document.querySelectorAll('[id^="ax-"]').forEach(el => {
+    const key = el.id.replace('ax-','');
+    extraData[key] = el.value;
+  });
+
+  const u = aaSelectedUser;
+  const newApp = {
+    id: 'APP-'+(100000+APPS.length+1),
+    userId: u.id,
+    type: aaSelectedType,
+    typeName: typeNamesBn[aaSelectedType],
+    typeIcon: typeIcons[aaSelectedType],
+    userName: u.nameBn, userNameEn: u.nameEn,
+    userNID: u.nid, userMobile: u.mobile,
+    userFather: u.fatherBn, userMother: u.motherBn,
+    userAddress: u.addressBn, userUnion: u.union,
+    purpose, note: document.getElementById('aa-note').value,
+    status: autoApprove ? 'approved' : 'pending',
+    appliedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    approvedAt: autoApprove ? new Date().toISOString() : null,
+    approvedBy: autoApprove ? adminMe.name : '',
+    adminComment: autoApprove ? 'অ্যাডমিন কর্তৃক সরাসরি আবেদন ও অনুমোদন' : '',
+    extraData, lang,
+    timeline: [
+      { time: new Date().toISOString(), action: `আবেদন জমা দেওয়া হয়েছে (অ্যাডমিন কর্তৃক)`, by: `${adminMe.name} (${roleLabels[adminMe.role]||adminMe.role})` },
+      ...(autoApprove ? [{ time: new Date().toISOString(), action: `✅ সরাসরি অনুমোদিত`, by: `${adminMe.name} (${roleLabels[adminMe.role]||adminMe.role})` }] : [])
+    ]
+  };
+
+  // Try server
+  try {
+    const r = await fetch('/api/user/apply', { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ type:aaSelectedType, typeName:typeNamesBn[aaSelectedType], typeIcon:typeIcons[aaSelectedType], purpose, note:newApp.note, extraData }) });
+    if (r.ok) {
+      const data = await r.json();
+      if (autoApprove && data.application) {
+        await fetch('/api/admin/approve', { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ appId:data.application.id, comment:'অ্যাডমিন কর্তৃক সরাসরি আবেদন' }) });
+      }
+    }
+  } catch(_) {}
+
+  // Always save offline
+  APPS.unshift(newApp);
+  addAudit(`অ্যাডমিন আবেদন${autoApprove?' ও অনুমোদন':''}: ${newApp.id} (${newApp.typeName}) - ${u.nameBn}`, adminMe.name, adminMe.role, autoApprove?'approve':'apply');
+
+  showNotif(autoApprove ? `✅ আবেদন জমা ও অনুমোদিত! ID: ${newApp.id}` : `📥 আবেদন জমা হয়েছে! ID: ${newApp.id}`, 's');
+  clearAAUser();
+  refreshAll();
+
+  // If auto-approved, offer certificate
+  if (autoApprove) {
+    setTimeout(()=>{
+      if (confirm(`সনদ এখনই দেখতে চান?\nID: ${newApp.id}`)) openCert(newApp.id);
+    }, 600);
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// AUDIT LOG
+// ══════════════════════════════════════════════════════
+async function renderAuditLog() {
+  let log = AUDIT;
+  try {
+    const r = await fetch('/api/admin/audit-log', { credentials:'include' });
+    if (r.ok) { const d = await r.json(); if(d.length) log=d; }
+  } catch(_) {}
+  const c = document.getElementById('audit-list');
+  if (!log.length) { c.innerHTML='<div class="text-center text-gray-400 py-4">কোনো লগ নেই</div>'; return; }
+  c.innerHTML = log.map(l=>`
+    <div class="log-row" style="border-color:${{approve:'#10b981',reject:'#ef4444',apply:'#3b82f6',admin:'#f59e0b',edit:'#8b5cf6',info:'#9ca3af'}[l.type]||'#9ca3af'};background:${{approve:'#f0fdf4',reject:'#fef2f2',apply:'#eff6ff',admin:'#fffbeb',edit:'#f5f3ff',info:'#f9fafb'}[l.type]||'#f9fafb'};">
+      <div class="flex items-center justify-between flex-wrap gap-1">
+        <span class="font-medium text-gray-800">${l.action}</span>
+        <span class="text-gray-400 text-xs">${new Date(l.time).toLocaleString('bn-BD')}</span>
+      </div>
+      <div class="text-gray-500 text-xs mt-0.5">${l.by||'—'} (${l.role||'—'}) · ${l.id}</div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════
+// REPORTS
+// ══════════════════════════════════════════════════════
+let adminSChart=null, adminTChart=null;
+async function renderReports() {
+  const d = await fetchDashboard();
+  const rate = d.totalApps ? (d.approved/d.totalApps*100).toFixed(1) : 0;
+  document.getElementById('rep-stats').innerHTML = `
+    <div class="stat-card" style="border-color:var(--g);"><div class="text-3xl font-bold text-green-700">${d.totalApps}</div><div class="text-sm text-gray-600 mt-1">মোট আবেদন<br><span class="text-xs text-gray-400">Total Applications</span></div></div>
+    <div class="stat-card" style="border-color:#3b82f6;"><div class="text-3xl font-bold text-blue-600">${rate}%</div><div class="text-sm text-gray-600 mt-1">অনুমোদনের হার<br><span class="text-xs text-gray-400">Approval Rate</span></div></div>
+    <div class="stat-card" style="border-color:#f59e0b;"><div class="text-3xl font-bold text-yellow-600">${d.pending}</div><div class="text-sm text-gray-600 mt-1">অপেক্ষমাণ<br><span class="text-xs text-gray-400">Pending</span></div></div>
+    <div class="stat-card" style="border-color:#6366f1;"><div class="text-3xl font-bold text-indigo-600">${d.totalUsers}</div><div class="text-sm text-gray-600 mt-1">মোট নাগরিক<br><span class="text-xs text-gray-400">Total Citizens</span></div></div>`;
+
+  // Status donut chart
+  const sLabels=['অপেক্ষমাণ','অনুমোদিত','বাতিল'];
+  const sData=[d.pending,d.approved,d.rejected||0];
+  const sColors=['#f59e0b','#10b981','#ef4444'];
+  if(adminSChart) adminSChart.destroy();
+  adminSChart=new Chart(document.getElementById('adminStatusChart'),{
+    type:'doughnut',
+    data:{labels:sLabels,datasets:[{data:sData,backgroundColor:sColors,borderWidth:0,hoverOffset:5}]},
+    options:{responsive:true,maintainAspectRatio:true,cutout:'65%',plugins:{legend:{display:false}}}
+  });
+  document.getElementById('admin-chart-legend').innerHTML=sLabels.map((l,i)=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;">
+      <div style="display:flex;align-items:center;gap:.4rem;"><div style="width:9px;height:9px;border-radius:50%;background:${sColors[i]};"></div><span style="font-size:.78rem;color:#374151;">${l}</span></div>
+      <span style="font-size:.82rem;font-weight:700;color:#1e293b;">${sData[i]}</span>
+    </div>`).join('');
+
+  // Type bar chart
+  const typeOrder=['character','residence','income','death','birth','inheritance'];
+  const tLabels=typeOrder.map(t=>typeLabels[t]?.replace(/^[^ ]+ /,'')||t);
+  const tData=typeOrder.map(t=>d.typeCounts[t]||0);
+  if(adminTChart) adminTChart.destroy();
+  adminTChart=new Chart(document.getElementById('adminTypeChart'),{
+    type:'bar',
+    data:{labels:tLabels,datasets:[{data:tData,backgroundColor:'rgba(0,106,78,.7)',borderRadius:6,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1,font:{size:10}}},x:{ticks:{font:{size:10}}}}}
+  });
+
+  const total=d.totalApps||1;
+  document.getElementById('rep-breakdown').innerHTML = Object.entries(typeLabels).map(([t,label])=>{
+    const n=d.typeCounts[t]||0, pct=(n/total*100).toFixed(1);
+    return `<div style="display:flex;align-items:center;gap:1rem;padding:.9rem 0;border-bottom:1px solid #f1f5f2;"><span style="width:9rem;font-size:.84rem;font-weight:500;">${label}</span><div style="flex:1;height:10px;background:#f1f5f2;border-radius:5px;overflow:hidden;"><div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--g),var(--gd));border-radius:5px;transition:width .6s;"></div></div><span style="width:2.5rem;text-align:right;font-size:.85rem;font-weight:700;">${n}</span><span style="width:3rem;text-align:right;font-size:.75rem;color:#9ca3af;">${pct}%</span></div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════
+function show(pg) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav-btn[data-page]').forEach(n=>n.classList.remove('on'));
+  const pageEl = document.getElementById(`p-${pg}`);
+  if (!pageEl) { console.warn('Page not found: p-'+pg); return; }
+  pageEl.classList.add('on');
+  // Activate matching nav button
+  const navBtn = document.querySelector(`.nav-btn[data-page="${pg}"]`);
+  if (navBtn) navBtn.classList.add('on');
+  const titles = {
+    overview: 'প্রশাসনিক ড্যাশবোর্ড / Admin Dashboard',
+    apps:     'সকল আবেদন / All Applications',
+    pending:  'অপেক্ষমাণ আবেদন / Pending',
+    users:    'নিবন্ধিত নাগরিক / Citizens',
+    'admin-apply': 'নাগরিকের পক্ষে আবেদন / Apply for Citizen',
+    audit:    'অডিট লগ / Audit Log',
+    reports:  'রিপোর্ট / Reports'
+  };
+  document.getElementById('page-title').textContent = titles[pg] || pg;
+  if (pg==='apps')        renderAppsTable();
+  if (pg==='reports')     renderReports();
+  if (pg==='pending')     renderPending();
+  if (pg==='audit')       renderAuditLog();
+  if (pg==='users')       renderUsersTable(null);
+  if (pg==='admin-apply') initAAUserList();
+}
+
+function openCert(appId) {
+  // Pass language from app data
+  const app = APPS.find(a=>a.id===appId);
+  const lang = app?.lang||'bn';
+  window.open(`/certificate?id=${appId}&lang=${lang}`, '_blank');
+}
+
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.add('hidden');}));
+
+async function adminLogout() {
+  try { await fetch('/api/auth/logout',{method:'POST',credentials:'include'}); } catch(_){}
+  window.location.reload();
+}
+
+function getBadge(s){return{pending:'bp',processing:'bpr',approved:'ba',rejected:'br'}[s]||'bp';}
+function getLabel(s){return{pending:'⏳ অপেক্ষমাণ',processing:'🔄 প্রক্রিয়াধীন',approved:'✅ অনুমোদিত',rejected:'❌ বাতিল'}[s]||s;}
+function showNotif(msg,type='s'){
+  const n=document.getElementById('notif');
+  n.textContent=msg; n.className=`notif ${type}`;
+  n.classList.add('show');
+  setTimeout(()=>n.classList.remove('show'),4000);
+}
+
+
+// ── USER SEARCH/FILTER ──
+function filterUsers() {
+  const q = (document.getElementById('search-users')?.value || '').toLowerCase();
+  const v = document.getElementById('filter-verified')?.value || '';
+  const filtered = USERS.filter(u => {
+    const matchQ = !q || (u.nameBn||'').includes(q) || (u.nameEn||'').toLowerCase().includes(q) || (u.mobile||'').includes(q) || (u.nid||'').includes(q);
+    const matchV = !v || String(u.verified) === v;
+    return matchQ && matchV;
+  });
+  renderUsersTable(filtered);
+}
+function clearUserFilter() {
+  const si = document.getElementById('search-users');
+  const vi = document.getElementById('filter-verified');
+  if (si) si.value = '';
+  if (vi) vi.value = '';
+  renderUsersTable(USERS);
+}
+
+checkSession();
+</script>
+</body>
+</html>

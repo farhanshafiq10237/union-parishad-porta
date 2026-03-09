@@ -1,0 +1,12 @@
+{
+  "name": "union-parishad-portal",
+  "version": "1.0.0",
+  "description": "ইউনিয়ন পরিষদ ডিজিটাল সেবা পোর্টাল",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

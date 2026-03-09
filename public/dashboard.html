@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ড্যাশবোর্ড | ইউনিয়ন পরিষদ পোর্টাল</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600;700;800&family=Noto+Sans+Bengali:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--g:#006A4E;--gd:#004d38;--gl:#e8f5ef;--gold:#C9A84C;--red:#F42A41;--bg:#f0f5f2;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans Bengali',sans-serif;background:var(--bg);min-height:100vh;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+@keyframes countUp{from{transform:translateY(6px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ── SIDEBAR ── */
+.sidebar{width:260px;background:linear-gradient(170deg,#071409 0%,#0a1e0d 60%,#0d2510 100%);min-height:100vh;position:fixed;left:0;top:0;z-index:50;border-right:1px solid rgba(201,168,76,.12);transition:transform .3s;}
+.main{margin-left:260px;min-height:100vh;}
+.sb-section{padding:.4rem .9rem;font-size:.65rem;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.12em;margin-top:.8rem;}
+.nav-btn{display:flex;align-items:center;gap:.75rem;padding:.72rem 1.1rem .72rem 1.2rem;color:rgba(255,255,255,.55);cursor:pointer;transition:all .22s;border-left:3px solid transparent;font-size:.86rem;border:none;background:none;width:100%;text-align:left;font-family:'Noto Sans Bengali',sans-serif;border-radius:0;}
+.nav-btn:hover{background:rgba(255,255,255,.05);color:#fff;border-left-color:rgba(201,168,76,.5);}
+.nav-btn.on{background:linear-gradient(90deg,rgba(0,106,78,.35),transparent);color:#fff;border-left-color:var(--g);font-weight:600;}
+.nav-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;background:rgba(255,255,255,.05);flex-shrink:0;}
+.nav-btn.on .nav-icon{background:rgba(0,106,78,.4);}
+.sb-badge{margin-left:auto;background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:.66rem;font-weight:700;}
+
+/* ── TOPBAR ── */
+.topbar{background:#fff;padding:.85rem 1.6rem;border-bottom:1px solid #e8ede9;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;box-shadow:0 1px 12px rgba(0,0,0,.05);}
+
+/* ── PAGES ── */
+.page{display:none;padding:1.6rem;}
+.page.on{display:block;animation:fadeUp .35s ease;}
+
+/* ── CARDS ── */
+.card{background:#fff;border-radius:16px;box-shadow:0 2px 14px rgba(0,0,0,.06);overflow:hidden;}
+.card-hdr{padding:1rem 1.4rem;border-bottom:1px solid #f0f5f2;display:flex;align-items:center;justify-content:space-between;}
+.card-body{padding:1.4rem;}
+
+/* ── STAT CARDS ── */
+.stat-card{background:#fff;border-radius:16px;padding:1.3rem;box-shadow:0 2px 14px rgba(0,0,0,.06);position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s;}
+.stat-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1);}
+.stat-card::after{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;opacity:.07;}
+.stat-num{font-family:'Noto Serif Bengali',serif;font-size:2.2rem;font-weight:700;line-height:1;animation:countUp .5s ease both;}
+
+/* ── CERT TYPE GRID ── */
+.cert-btn{padding:1rem;border-radius:14px;border:2px solid #e8ede9;background:#fff;cursor:pointer;transition:all .22s;text-align:center;position:relative;overflow:hidden;}
+.cert-btn::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .22s;background:linear-gradient(135deg,rgba(0,106,78,.08),transparent);}
+.cert-btn:hover{border-color:var(--g);transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,106,78,.1);}
+.cert-btn:hover::before{opacity:1;}
+.cert-btn.selected{border-color:var(--g);background:var(--gl);}
+
+/* ── FORMS ── */
+.form-input{width:100%;padding:.68rem .95rem;border:2px solid #e2e8f0;border-radius:10px;font-family:'Noto Sans Bengali',sans-serif;font-size:.88rem;outline:none;transition:all .25s;background:#f9fbf9;color:#1e293b;}
+.form-input:focus{border-color:var(--g);background:#fff;box-shadow:0 0 0 3px rgba(0,106,78,.08);}
+.form-input:read-only{background:#f0f5f2;color:#6b7280;}
+
+/* ── BTNS ── */
+.btn{padding:.6rem 1.1rem;border-radius:9px;font-family:'Noto Sans Bengali',sans-serif;font-size:.84rem;font-weight:600;cursor:pointer;transition:all .22s;border:none;display:inline-flex;align-items:center;gap:.4rem;}
+.btn-g{background:var(--g);color:#fff;}.btn-g:hover{background:var(--gd);transform:translateY(-1px);}
+.btn-gd{background:var(--gold);color:#fff;}.btn-gd:hover{background:#a8883a;}
+.btn-r{background:var(--red);color:#fff;}
+.btn-outline{background:transparent;border:2px solid var(--g);color:var(--g);}.btn-outline:hover{background:var(--g);color:#fff;}
+.btn-ghost{background:transparent;border:1.5px solid #e2e8f0;color:#6b7280;}.btn-ghost:hover{border-color:var(--g);color:var(--g);}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:.3rem;padding:.22rem .6rem;border-radius:20px;font-size:.74rem;font-weight:600;}
+.bp{background:#fef3c7;color:#92400e;}
+.ba{background:#d1fae5;color:#065f46;}
+.br{background:#fee2e2;color:#991b1b;}
+.bpr{background:#dbeafe;color:#1e40af;}
+
+/* ── NOTIFICATION ── */
+.notif{position:fixed;top:20px;right:20px;z-index:9999;padding:.9rem 1.4rem;border-radius:12px;color:#fff;font-size:.88rem;font-weight:500;transform:translateX(130%);transition:transform .4s cubic-bezier(.34,1.56,.64,1);max-width:320px;box-shadow:0 8px 30px rgba(0,0,0,.2);}
+.notif.show{transform:translateX(0);}
+.notif.s{background:linear-gradient(135deg,#059669,#047857);}
+.notif.e{background:linear-gradient(135deg,#e11d48,#be123c);}
+.notif.i{background:linear-gradient(135deg,#2563eb,#1d4ed8);}
+
+/* ── MODAL ── */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(6px);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;}
+.modal.hidden{display:none;}
+.modal-box{background:#fff;border-radius:20px;max-width:660px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,.25);}
+.modal-hdr{background:linear-gradient(135deg,var(--g),var(--gd));padding:1.2rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-radius:20px 20px 0 0;}
+
+/* ── SEARCH ── */
+.search-bar{position:relative;}
+.search-bar input{padding-left:2.6rem;}
+.search-icon{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);color:#9ca3af;pointer-events:none;}
+
+/* ── TIMELINE ── */
+.timeline-item{display:flex;gap:.9rem;padding:.7rem 0;}
+.timeline-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.8rem;}
+.timeline-line{width:2px;background:#e5e7eb;margin:0 auto;flex-shrink:0;}
+
+/* ── PROGRESS ── */
+.progress-bar{height:8px;border-radius:4px;background:#e8ede9;overflow:hidden;}
+.progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--g),var(--gold));transition:width .8s cubic-bezier(.4,0,.2,1);}
+
+/* ── CERT DOWNLOAD CARD ── */
+.cert-card{border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.08);transition:all .25s;}
+.cert-card:hover{transform:translateY(-4px);box-shadow:0 12px 35px rgba(0,0,0,.13);}
+
+.spinner{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle;}
+
+/* STATUS TRACKER */
+.track-step{display:flex;align-items:center;gap:.8rem;padding:.7rem .9rem;border-radius:10px;transition:background .2s;}
+.track-step.done{background:#f0fdf4;}.track-step.active{background:#fefce8;}.track-step.wait{background:#f9fafb;}
+.track-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
+
+@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.stat-num{font-size:1.6rem;}}
+</style>
+</head>
+<body>
+<div class="notif" id="notif"></div>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar" id="sb">
+  <div style="padding:1.2rem 1.1rem;border-bottom:1px solid rgba(201,168,76,.1);">
+    <div class="flex items-center gap-3">
+      <div id="sb-avatar" style="width:42px;height:42px;background:linear-gradient(135deg,var(--g),#004d38);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:#fff;border:2px solid rgba(201,168,76,.3);flex-shrink:0;">?</div>
+      <div style="overflow:hidden;">
+        <div class="text-white font-bold text-sm truncate" id="sb-name">লোড হচ্ছে...</div>
+        <div style="color:rgba(255,255,255,.4);font-size:.72rem;" id="sb-mobile"></div>
+      </div>
+    </div>
+    <div style="margin-top:.8rem;padding:.35rem .7rem;border-radius:8px;background:rgba(0,106,78,.25);border:1px solid rgba(0,106,78,.3);display:flex;align-items:center;gap:.4rem;">
+      <div style="width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite;"></div>
+      <span style="color:#6ee7b7;font-size:.72rem;font-weight:600;">✅ যাচাইকৃত নাগরিক · Verified Citizen</span>
+    </div>
+  </div>
+  <nav style="padding:.5rem 0;">
+    <div class="sb-section">প্রধান মেনু · Main Menu</div>
+    <button class="nav-btn on" onclick="show('home')"><span class="nav-icon">🏠</span>ড্যাশবোর্ড / Dashboard</button>
+    <button class="nav-btn" onclick="show('apply')"><span class="nav-icon">📝</span>আবেদন করুন / Apply</button>
+    <button class="nav-btn" onclick="show('myapps')"><span class="nav-icon">📋</span>আমার আবেদন <span class="sb-badge" id="sb-pend-badge" style="display:none;">0</span></button>
+    <button class="nav-btn" onclick="show('certs')"><span class="nav-icon">🏆</span>অনুমোদিত সনদ / Certs</button>
+    <div class="sb-section" style="margin-top:1rem;">সেবাসমূহ · Tools</div>
+    <button class="nav-btn" onclick="show('track')"><span class="nav-icon">🔍</span>ট্র্যাক করুন / Track</button>
+    <button class="nav-btn" onclick="show('profile')"><span class="nav-icon">👤</span>আমার প্রোফাইল</button>
+    <button class="nav-btn" onclick="show('help')"><span class="nav-icon">💡</span>সাহায্য / Help</button>
+  </nav>
+  <div style="position:absolute;bottom:1rem;left:0;right:0;padding:0 .8rem;">
+    <button onclick="logout()" style="display:flex;align-items:center;gap:.7rem;padding:.7rem 1rem;border-radius:10px;background:rgba(244,42,65,.08);border:1px solid rgba(244,42,65,.15);color:rgba(244,42,65,.8);cursor:pointer;font-family:'Noto Sans Bengali',sans-serif;font-size:.84rem;width:100%;transition:all .2s;" onmouseover="this.style.background='rgba(244,42,65,.15)'" onmouseout="this.style.background='rgba(244,42,65,.08)'">
+      <span>🚪</span> লগআউট / Logout
+    </button>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="flex items-center gap-3">
+      <button onclick="document.getElementById('sb').classList.toggle('open')" class="md:hidden text-gray-500 text-xl">☰</button>
+      <div>
+        <h1 class="font-bold text-gray-800" style="font-size:.95rem;" id="page-title">ড্যাশবোর্ড</h1>
+        <p style="color:#9ca3af;font-size:.7rem;" id="page-sub">ইউনিয়ন পরিষদ ডিজিটাল সেবা · Digital Services</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <div style="text-align:right;">
+        <div style="font-size:.72rem;color:#9ca3af;" id="clock-date"></div>
+        <div style="font-size:.72rem;color:var(--g);font-weight:600;" id="clock-time"></div>
+      </div>
+      <div style="width:36px;height:36px;background:var(--gl);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;border:1.5px solid #c6e0d3;" id="topbar-avatar" onclick="show('profile')">?</div>
+    </div>
+  </div>
+
+  <!-- ═══ HOME ═══ -->
+  <div class="page on" id="p-home">
+    <!-- Welcome Banner -->
+    <div style="background:linear-gradient(135deg,var(--g) 0%,#004d38 60%,#003028 100%);border-radius:18px;padding:1.6rem 2rem;margin-bottom:1.6rem;position:relative;overflow:hidden;">
+      <div style="position:absolute;right:-20px;top:-20px;width:120px;height:120px;background:rgba(255,255,255,.04);border-radius:50%;"></div>
+      <div style="position:absolute;right:40px;bottom:-30px;width:80px;height:80px;background:rgba(201,168,76,.08);border-radius:50%;"></div>
+      <h2 style="font-family:'Noto Serif Bengali',serif;font-size:1.4rem;font-weight:700;color:#fff;margin-bottom:.3rem;" id="welcome">স্বাগতম! 👋</h2>
+      <p style="color:rgba(255,255,255,.6);font-size:.84rem;">আপনার সেবার সারসংক্ষেপ নিচে দেওয়া আছে · Here's your service summary</p>
+      <div style="margin-top:1.2rem;display:flex;gap:.6rem;flex-wrap:wrap;">
+        <button onclick="show('apply')" class="btn" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(4px);">📝 নতুন আবেদন / Apply Now</button>
+        <button onclick="show('certs')" class="btn" style="background:rgba(201,168,76,.2);color:var(--gold);border:1px solid rgba(201,168,76,.3);">📥 সনদ ডাউনলোড / Download</button>
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div class="stat-card" style="border-left:4px solid var(--g);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;">
+          <div style="font-size:.75rem;color:#6b7280;font-weight:600;">মোট / Total</div>
+          <div style="width:32px;height:32px;background:#f0fdf4;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;">📋</div>
+        </div>
+        <div class="stat-num" style="color:var(--g);" id="st-tot">০</div>
+        <div style="font-size:.72rem;color:#9ca3af;margin-top:.25rem;">Total Applications</div>
+      </div>
+      <div class="stat-card" style="border-left:4px solid #f59e0b;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;">
+          <div style="font-size:.75rem;color:#6b7280;font-weight:600;">অপেক্ষমাণ</div>
+          <div style="width:32px;height:32px;background:#fffbeb;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;">⏳</div>
+        </div>
+        <div class="stat-num" style="color:#d97706;" id="st-pnd">০</div>
+        <div style="font-size:.72rem;color:#9ca3af;margin-top:.25rem;">Pending Review</div>
+      </div>
+      <div class="stat-card" style="border-left:4px solid #10b981;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;">
+          <div style="font-size:.75rem;color:#6b7280;font-weight:600;">অনুমোদিত</div>
+          <div style="width:32px;height:32px;background:#f0fdf4;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;">✅</div>
+        </div>
+        <div class="stat-num" style="color:#059669;" id="st-apv">০</div>
+        <div style="font-size:.72rem;color:#9ca3af;margin-top:.25rem;">Approved Certs</div>
+      </div>
+      <div class="stat-card" style="border-left:4px solid var(--red);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;">
+          <div style="font-size:.75rem;color:#6b7280;font-weight:600;">বাতিল</div>
+          <div style="width:32px;height:32px;background:#fef2f2;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;">❌</div>
+        </div>
+        <div class="stat-num" style="color:#dc2626;" id="st-rej">০</div>
+        <div style="font-size:.72rem;color:#9ca3af;margin-top:.25rem;">Rejected</div>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-5 mb-5">
+      <!-- Quick Apply -->
+      <div class="card col-span-1">
+        <div class="card-hdr">
+          <span style="font-weight:700;color:#1e293b;font-size:.88rem;">⚡ দ্রুত আবেদন / Quick Apply</span>
+        </div>
+        <div class="card-body">
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="quickApply('character','চারিত্রিক সনদ','📜')" class="cert-btn">
+              <div style="font-size:1.4rem;margin-bottom:.3rem;">📜</div>
+              <div style="font-size:.7rem;font-weight:600;color:#374151;">চারিত্রিক<br><span style="color:#9ca3af;font-weight:400;">Character</span></div>
+            </button>
+            <button onclick="quickApply('death','মৃত্যু সনদ','🕊️')" class="cert-btn">
+              <div style="font-size:1.4rem;margin-bottom:.3rem;">🕊️</div>
+              <div style="font-size:.7rem;font-weight:600;color:#374151;">মৃত্যু<br><span style="color:#9ca3af;font-weight:400;">Death</span></div>
+            </button>
+            <button onclick="quickApply('residence','নাগরিক সনদ','🏠')" class="cert-btn">
+              <div style="font-size:1.4rem;margin-bottom:.3rem;">🏠</div>
+              <div style="font-size:.7rem;font-weight:600;color:#374151;">নাগরিক<br><span style="color:#9ca3af;font-weight:400;">Residence</span></div>
+            </button>
+            <button onclick="quickApply('income','আয় সনদ','💰')" class="cert-btn">
+              <div style="font-size:1.4rem;margin-bottom:.3rem;">💰</div>
+              <div style="font-size:.7rem;font-weight:600;color:#374151;">আয়<br><span style="color:#9ca3af;font-weight:400;">Income</span></div>
+            </button>
+            <button onclick="quickApply('birth','জন্ম নিবন্ধন','👶')" class="cert-btn">
+              <div style="font-size:1.4rem;margin-bottom:.3rem;">👶</div>
+              <div style="font-size:.7rem;font-weight:600;color:#374151;">জন্ম<br><span style="color:#9ca3af;font-weight:400;">Birth</span></div>
+            </button>
+            <button onclick="quickApply('inheritance','ওয়ারিশ সনদ','📋')" class="cert-btn">
+              <div style="font-size:1.4rem;margin-bottom:.3rem;">📋</div>
+              <div style="font-size:.7rem;font-weight:600;color:#374151;">ওয়ারিশ<br><span style="color:#9ca3af;font-weight:400;">Inherit.</span></div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="card col-span-2">
+        <div class="card-hdr">
+          <span style="font-weight:700;color:#1e293b;font-size:.88rem;">📊 আবেদনের অবস্থা / Application Status</span>
+          <span style="font-size:.72rem;color:#9ca3af;">সকল আবেদন · All</span>
+        </div>
+        <div class="card-body" style="display:flex;align-items:center;gap:1.5rem;">
+          <div style="width:160px;height:160px;flex-shrink:0;">
+            <canvas id="statusChart"></canvas>
+          </div>
+          <div style="flex:1;" id="chart-legend"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="card">
+      <div class="card-hdr">
+        <span style="font-weight:700;color:#1e293b;font-size:.88rem;">🕐 সাম্প্রতিক কার্যক্রম / Recent Activity</span>
+        <button onclick="show('myapps')" class="btn btn-ghost" style="font-size:.78rem;">সব দেখুন →</button>
+      </div>
+      <div class="card-body" id="recent-list" style="padding:0;">
+        <div style="padding:2rem;text-align:center;color:#9ca3af;font-size:.85rem;">কোনো কার্যক্রম নেই · No activity</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ APPLY ═══ -->
+  <div class="page" id="p-apply">
+    <div class="max-w-2xl">
+      <div style="margin-bottom:1.4rem;">
+        <h2 style="font-size:1.15rem;font-weight:700;color:#1e293b;">📝 নতুন সনদের আবেদন</h2>
+        <p style="color:#6b7280;font-size:.82rem;margin-top:.3rem;">Apply for a new certificate · সরকারি সনদের জন্য আবেদন করুন</p>
+      </div>
+
+      <!-- Cert type selection -->
+      <div class="card mb-4">
+        <div class="card-hdr"><span style="font-weight:700;color:#1e293b;font-size:.88rem;">ধাপ ১: সনদের ধরন / Step 1: Certificate Type</span></div>
+        <div class="card-body">
+          <div class="grid grid-cols-3 gap-3" id="cert-type-grid">
+            <button onclick="selectCertType('character','চারিত্রিক সনদ','📜')" class="cert-btn" id="ct-character">
+              <div style="font-size:1.8rem;margin-bottom:.4rem;">📜</div>
+              <div style="font-size:.8rem;font-weight:700;color:#1e293b;">চারিত্রিক সনদ</div>
+              <div style="font-size:.7rem;color:#6b7280;margin-top:.1rem;">Character Certificate</div>
+            </button>
+            <button onclick="selectCertType('death','মৃত্যু সনদ','🕊️')" class="cert-btn" id="ct-death">
+              <div style="font-size:1.8rem;margin-bottom:.4rem;">🕊️</div>
+              <div style="font-size:.8rem;font-weight:700;color:#1e293b;">মৃত্যু সনদ</div>
+              <div style="font-size:.7rem;color:#6b7280;margin-top:.1rem;">Death Certificate</div>
+            </button>
+            <button onclick="selectCertType('residence','নাগরিক সনদ','🏠')" class="cert-btn" id="ct-residence">
+              <div style="font-size:1.8rem;margin-bottom:.4rem;">🏠</div>
+              <div style="font-size:.8rem;font-weight:700;color:#1e293b;">নাগরিক সনদ</div>
+              <div style="font-size:.7rem;color:#6b7280;margin-top:.1rem;">Residence Certificate</div>
+            </button>
+            <button onclick="selectCertType('income','আয় সনদ','💰')" class="cert-btn" id="ct-income">
+              <div style="font-size:1.8rem;margin-bottom:.4rem;">💰</div>
+              <div style="font-size:.8rem;font-weight:700;color:#1e293b;">আয় সনদ</div>
+              <div style="font-size:.7rem;color:#6b7280;margin-top:.1rem;">Income Certificate</div>
+            </button>
+            <button onclick="selectCertType('birth','জন্ম নিবন্ধন','👶')" class="cert-btn" id="ct-birth">
+              <div style="font-size:1.8rem;margin-bottom:.4rem;">👶</div>
+              <div style="font-size:.8rem;font-weight:700;color:#1e293b;">জন্ম নিবন্ধন</div>
+              <div style="font-size:.7rem;color:#6b7280;margin-top:.1rem;">Birth Certificate</div>
+            </button>
+            <button onclick="selectCertType('inheritance','ওয়ারিশ সনদ','📋')" class="cert-btn" id="ct-inheritance">
+              <div style="font-size:1.8rem;margin-bottom:.4rem;">📋</div>
+              <div style="font-size:.8rem;font-weight:700;color:#1e293b;">ওয়ারিশ সনদ</div>
+              <div style="font-size:.7rem;color:#6b7280;margin-top:.1rem;">Inheritance Cert.</div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dynamic extra fields -->
+      <div id="apply-step2" class="hidden">
+        <div class="card mb-4" id="dyn-card">
+          <div class="card-hdr"><span style="font-weight:700;color:#1e293b;font-size:.88rem;" id="dyn-title">ধাপ ২: অতিরিক্ত তথ্য / Step 2: Extra Info</span></div>
+          <div class="card-body space-y-3" id="dyn-fields"></div>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-hdr" style="background:linear-gradient(135deg,#f0fdf4,#fff);"><span style="font-weight:700;color:var(--g);font-size:.88rem;">📌 আবেদনকারীর তথ্য / Applicant Info</span></div>
+          <div class="card-body">
+            <div class="grid grid-cols-2 gap-3">
+              <div><label style="font-size:.75rem;color:#6b7280;font-weight:600;display:block;margin-bottom:.3rem;">নাম (বাংলা)</label><input class="form-input" id="an-bn" readonly></div>
+              <div><label style="font-size:.75rem;color:#6b7280;font-weight:600;display:block;margin-bottom:.3rem;">Name (English)</label><input class="form-input" id="an-en" readonly></div>
+              <div><label style="font-size:.75rem;color:#6b7280;font-weight:600;display:block;margin-bottom:.3rem;">পিতার নাম / Father</label><input class="form-input" id="af-bn" readonly></div>
+              <div><label style="font-size:.75rem;color:#6b7280;font-weight:600;display:block;margin-bottom:.3rem;">মাতার নাম / Mother</label><input class="form-input" id="am-bn" readonly></div>
+              <div><label style="font-size:.75rem;color:#6b7280;font-weight:600;display:block;margin-bottom:.3rem;">NID নম্বর</label><input class="form-input" id="a-nid" readonly></div>
+              <div><label style="font-size:.75rem;color:#6b7280;font-weight:600;display:block;margin-bottom:.3rem;">মোবাইল / Mobile</label><input class="form-input" id="a-mob" readonly></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hdr"><span style="font-weight:700;color:#1e293b;font-size:.88rem;">ধাপ ৩: উদ্দেশ্য ও জমা / Step 3: Purpose & Submit</span></div>
+          <div class="card-body space-y-4">
+            <div>
+              <label style="font-size:.82rem;font-weight:600;color:#374151;display:block;margin-bottom:.5rem;">উদ্দেশ্য / Purpose *</label>
+              <select id="app-purpose" class="form-input">
+                <option value="">নির্বাচন করুন / Select purpose</option>
+                <option>চাকরির আবেদন / Job Application</option>
+                <option>পাসপোর্ট / Passport</option>
+                <option>ব্যাংক অ্যাকাউন্ট / Bank Account</option>
+                <option>ভর্তি / Admission</option>
+                <option>বিদেশ গমন / Travel Abroad</option>
+                <option>আইনি প্রয়োজন / Legal Purpose</option>
+                <option>সম্পত্তি হস্তান্তর / Property Transfer</option>
+                <option>অন্যান্য / Other</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:.82rem;font-weight:600;color:#374151;display:block;margin-bottom:.5rem;">সনদের ভাষা / Certificate Language</label>
+              <div class="flex gap-3">
+                <label class="flex items-center gap-2 cursor-pointer text-sm"><input type="radio" name="cert-lang" value="bn" checked style="accent-color:var(--g);"> বাংলা</label>
+                <label class="flex items-center gap-2 cursor-pointer text-sm"><input type="radio" name="cert-lang" value="en"> English</label>
+                <label class="flex items-center gap-2 cursor-pointer text-sm"><input type="radio" name="cert-lang" value="both"> উভয় / Both</label>
+              </div>
+            </div>
+            <div>
+              <label style="font-size:.82rem;font-weight:600;color:#374151;display:block;margin-bottom:.5rem;">অতিরিক্ত মন্তব্য / Note</label>
+              <textarea id="app-note" class="form-input" rows="2" placeholder="বিশেষ তথ্য থাকলে লিখুন / Any special info..."></textarea>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:.7rem;padding:.9rem;border-radius:10px;background:#fffbeb;border:1px solid #fde68a;">
+              <input type="checkbox" id="app-confirm" style="margin-top:2px;accent-color:var(--g);width:16px;height:16px;flex-shrink:0;">
+              <label for="app-confirm" style="font-size:.82rem;color:#374151;cursor:pointer;">আমি নিশ্চিত করছি যে উপরের সকল তথ্য সঠিক ও সত্য।<br><span style="color:#6b7280;font-size:.76rem;">I confirm that all information provided is correct and true.</span></label>
+            </div>
+            <button onclick="submitApp()" class="btn btn-g w-full" style="padding:.9rem;font-size:.95rem;justify-content:center;" id="submit-btn">
+              📤 আবেদন জমা দিন / Submit Application
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ MY APPS ═══ -->
+  <div class="page" id="p-myapps">
+    <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
+      <div>
+        <h2 style="font-size:1.15rem;font-weight:700;color:#1e293b;">📋 আমার আবেদনসমূহ / My Applications</h2>
+        <p style="color:#6b7280;font-size:.78rem;margin-top:.2rem;" id="apps-count"></p>
+      </div>
+      <button onclick="show('apply')" class="btn btn-g">+ নতুন আবেদন / New</button>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="card mb-4">
+      <div class="card-body" style="padding:1rem 1.2rem;">
+        <div class="flex gap-3 flex-wrap">
+          <div class="search-bar flex-1" style="min-width:200px;">
+            <div class="search-icon">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </div>
+            <input type="text" id="search-apps" class="form-input" placeholder="আবেদন খুঁজুন / Search applications..." oninput="filterApps()">
+          </div>
+          <select id="filter-status" class="form-input" style="width:auto;min-width:140px;" onchange="filterApps()">
+            <option value="">সকল স্ট্যাটাস / All</option>
+            <option value="pending">⏳ অপেক্ষমাণ</option>
+            <option value="approved">✅ অনুমোদিত</option>
+            <option value="rejected">❌ বাতিল</option>
+          </select>
+          <select id="filter-type" class="form-input" style="width:auto;min-width:140px;" onchange="filterApps()">
+            <option value="">সকল সনদ / All Types</option>
+            <option value="character">📜 চারিত্রিক</option>
+            <option value="death">🕊️ মৃত্যু</option>
+            <option value="residence">🏠 নাগরিক</option>
+            <option value="income">💰 আয়</option>
+            <option value="birth">👶 জন্ম</option>
+            <option value="inheritance">📋 ওয়ারিশ</option>
+          </select>
+          <button onclick="clearFilters()" class="btn btn-ghost">↺ রিসেট</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="myapps-list"></div>
+  </div>
+
+  <!-- ═══ CERTS ═══ -->
+  <div class="page" id="p-certs">
+    <div class="mb-5">
+      <h2 style="font-size:1.15rem;font-weight:700;color:#1e293b;">🏆 অনুমোদিত সনদসমূহ / Approved Certificates</h2>
+      <p style="color:#6b7280;font-size:.78rem;margin-top:.2rem;">ডাউনলোড করুন বা প্রিন্ট করুন · Download or Print</p>
+    </div>
+    <div id="certs-grid" class="grid md:grid-cols-2 gap-4"></div>
+  </div>
+
+  <!-- ═══ TRACK ═══ -->
+  <div class="page" id="p-track">
+    <div style="max-width:560px;">
+      <div style="margin-bottom:1.4rem;">
+        <h2 style="font-size:1.15rem;font-weight:700;color:#1e293b;">🔍 আবেদন ট্র্যাক / Track Application</h2>
+        <p style="color:#6b7280;font-size:.82rem;margin-top:.3rem;">আবেদন নম্বর দিয়ে স্ট্যাটাস দেখুন · Check status by application ID</p>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="flex gap-3">
+            <div class="search-bar flex-1">
+              <div class="search-icon"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></div>
+              <input type="text" id="track-input" class="form-input" placeholder="APP-XXXXXX" oninput="this.value=this.value.toUpperCase()">
+            </div>
+            <button onclick="trackApp()" class="btn btn-g">খুঁজুন / Search</button>
+          </div>
+          <!-- Quick pick -->
+          <div style="margin-top:.9rem;">
+            <div style="font-size:.72rem;color:#9ca3af;margin-bottom:.4rem;">আপনার আবেদনসমূহ / Your applications:</div>
+            <div class="flex gap-2 flex-wrap" id="track-quick"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="track-result"></div>
+    </div>
+  </div>
+
+  <!-- ═══ PROFILE ═══ -->
+  <div class="page" id="p-profile">
+    <div style="max-width:680px;">
+      <div style="margin-bottom:1.4rem;">
+        <h2 style="font-size:1.15rem;font-weight:700;color:#1e293b;">👤 আমার প্রোফাইল / My Profile</h2>
+      </div>
+
+      <!-- Profile header card -->
+      <div class="card mb-4">
+        <div style="background:linear-gradient(135deg,var(--g),#004d38);padding:1.8rem;border-radius:16px 16px 0 0;">
+          <div class="flex items-center gap-4">
+            <div id="profile-avatar-big" style="width:60px;height:60px;background:rgba(255,255,255,.15);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:700;color:#fff;border:2px solid rgba(255,255,255,.2);flex-shrink:0;">?</div>
+            <div>
+              <div style="font-family:'Noto Serif Bengali',serif;font-size:1.3rem;font-weight:700;color:#fff;" id="pf-name-big">—</div>
+              <div style="color:rgba(255,255,255,.6);font-size:.82rem;" id="pf-union-big">—</div>
+              <div style="margin-top:.5rem;display:inline-flex;align-items:center;gap:.4rem;background:rgba(0,255,150,.15);padding:.25rem .6rem;border-radius:20px;border:1px solid rgba(0,255,150,.2);">
+                <div style="width:6px;height:6px;border-radius:50%;background:#4ade80;"></div>
+                <span style="color:#6ee7b7;font-size:.72rem;font-weight:600;">✅ যাচাইকৃত নাগরিক · Verified Citizen</span>
+              </div>
+            </div>
+            <div style="margin-left:auto;">
+              <button onclick="toggleEdit()" id="edit-btn" class="btn" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25);">✏️ সম্পাদনা</button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body" id="profile-view"></div>
+        <div class="card-body hidden" id="profile-edit-form">
+          <div class="grid grid-cols-2 gap-4">
+            <div><label style="font-size:.78rem;font-weight:600;color:#6b7280;display:block;margin-bottom:.4rem;">নাম (বাংলা)</label><input class="form-input" id="pe-nameBn"></div>
+            <div><label style="font-size:.78rem;font-weight:600;color:#6b7280;display:block;margin-bottom:.4rem;">Name (English)</label><input class="form-input" id="pe-nameEn"></div>
+            <div><label style="font-size:.78rem;font-weight:600;color:#6b7280;display:block;margin-bottom:.4rem;">পিতার নাম</label><input class="form-input" id="pe-fatherBn"></div>
+            <div><label style="font-size:.78rem;font-weight:600;color:#6b7280;display:block;margin-bottom:.4rem;">Father's Name</label><input class="form-input" id="pe-fatherEn"></div>
+          </div>
+          <div style="margin-top:.9rem;"><label style="font-size:.78rem;font-weight:600;color:#6b7280;display:block;margin-bottom:.4rem;">ঠিকানা / Address</label><textarea class="form-input" id="pe-addressBn" rows="2"></textarea></div>
+          <div class="flex gap-3 mt-4">
+            <button onclick="saveProfile()" class="btn btn-g">💾 সংরক্ষণ করুন / Save</button>
+            <button onclick="toggleEdit()" class="btn btn-ghost">বাতিল / Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats for profile -->
+      <div class="grid grid-cols-3 gap-3">
+        <div class="card" style="text-align:center;padding:1rem;">
+          <div style="font-size:1.6rem;font-weight:700;color:var(--g);" id="pf-tot">০</div>
+          <div style="font-size:.72rem;color:#6b7280;margin-top:.2rem;">মোট আবেদন<br>Total Apps</div>
+        </div>
+        <div class="card" style="text-align:center;padding:1rem;">
+          <div style="font-size:1.6rem;font-weight:700;color:#059669;" id="pf-apv">০</div>
+          <div style="font-size:.72rem;color:#6b7280;margin-top:.2rem;">অনুমোদিত<br>Approved</div>
+        </div>
+        <div class="card" style="text-align:center;padding:1rem;">
+          <div style="font-size:1.6rem;font-weight:700;color:#d97706;" id="pf-pnd">০</div>
+          <div style="font-size:.72rem;color:#6b7280;margin-top:.2rem;">অপেক্ষমাণ<br>Pending</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ HELP ═══ -->
+  <div class="page" id="p-help">
+    <div style="max-width:640px;">
+      <div style="margin-bottom:1.4rem;">
+        <h2 style="font-size:1.15rem;font-weight:700;color:#1e293b;">💡 সাহায্য ও তথ্য / Help & Information</h2>
+      </div>
+      <div class="space-y-3">
+        <div class="card">
+          <details style="cursor:pointer;">
+            <summary class="card-hdr" style="cursor:pointer;list-style:none;font-weight:700;color:#1e293b;font-size:.9rem;">📜 কোন সনদের জন্য কী কী লাগে? / Required Documents</summary>
+            <div class="card-body" style="border-top:1px solid #f0f5f2;">
+              <div class="space-y-3">
+                <div style="padding:.8rem;background:#f8fafc;border-radius:10px;border-left:3px solid var(--g);">
+                  <div style="font-weight:700;font-size:.85rem;color:#1e293b;margin-bottom:.3rem;">📜 চারিত্রিক সনদ / Character Certificate</div>
+                  <div style="font-size:.8rem;color:#6b7280;">জাতীয় পরিচয়পত্র · NID Card • আবেদনের উদ্দেশ্য · Purpose of application</div>
+                </div>
+                <div style="padding:.8rem;background:#f8fafc;border-radius:10px;border-left:3px solid #3b82f6;">
+                  <div style="font-weight:700;font-size:.85rem;color:#1e293b;margin-bottom:.3rem;">🕊️ মৃত্যু সনদ / Death Certificate</div>
+                  <div style="font-size:.8rem;color:#6b7280;">মৃত ব্যক্তির নাম · Deceased's name • মৃত্যুর তারিখ ও কারণ · Date & cause of death</div>
+                </div>
+                <div style="padding:.8rem;background:#f8fafc;border-radius:10px;border-left:3px solid #f59e0b;">
+                  <div style="font-weight:700;font-size:.85rem;color:#1e293b;margin-bottom:.3rem;">💰 আয় সনদ / Income Certificate</div>
+                  <div style="font-size:.8rem;color:#6b7280;">বার্ষিক আয়ের পরিমাণ · Annual income • আয়ের উৎস · Source of income</div>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+        <div class="card">
+          <details>
+            <summary class="card-hdr" style="cursor:pointer;list-style:none;font-weight:700;color:#1e293b;font-size:.9rem;">⏱️ প্রক্রিয়াকরণের সময় / Processing Time</summary>
+            <div class="card-body" style="border-top:1px solid #f0f5f2;">
+              <div style="font-size:.85rem;color:#374151;line-height:1.8;">
+                • সাধারণ সনদ / Regular certificate: <strong>১-৩ কার্যদিবস / 1-3 working days</strong><br>
+                • মৃত্যু/ওয়ারিশ সনদ / Death/Inheritance: <strong>৩-৭ কার্যদিবস / 3-7 working days</strong><br>
+                • জরুরি ক্ষেত্রে / Urgent cases: অ্যাডমিনের সাথে যোগাযোগ করুন · Contact admin
+              </div>
+            </div>
+          </details>
+        </div>
+        <div class="card">
+          <details>
+            <summary class="card-hdr" style="cursor:pointer;list-style:none;font-weight:700;color:#1e293b;font-size:.9rem;">📞 যোগাযোগ / Contact</summary>
+            <div class="card-body" style="border-top:1px solid #f0f5f2;">
+              <div style="font-size:.85rem;color:#374151;line-height:2;">
+                🏛️ উত্তর শাহবাজপুর ইউনিয়ন পরিষদ<br>
+                📞 ০১XXXXXXXXX<br>
+                🕐 সোম-শুক্র, সকাল ৯টা - বিকেল ৫টা<br>
+                <span style="color:#9ca3af;font-size:.78rem;">Mon-Fri, 9 AM - 5 PM</span>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end main -->
+
+<!-- APP DETAIL MODAL -->
+<div class="modal hidden" id="app-modal">
+  <div class="modal-box">
+    <div class="modal-hdr"><span class="text-white font-bold">📋 আবেদনের বিস্তারিত / Application Detail</span><button onclick="closeModal()" class="text-white text-2xl opacity-75 hover:opacity-100">×</button></div>
+    <div id="app-modal-body" class="p-6"></div>
+  </div>
+</div>
+
+<script>
+let me = null, myApps = [], chart = null;
+
+// ── INIT ──
+async function init() {
+  try {
+    const r = await fetch('/api/auth/me', { credentials:'include' });
+    if (!r.ok) { window.location.href='/login'; return; }
+    me = await r.json();
+    if (me.sessionRole !== 'user') { window.location.href='/login'; return; }
+    updateSidebar();
+    prefillApply();
+    renderProfile();
+    await loadApps();
+    setInterval(tick,1000); tick();
+  } catch(e) { window.location.href='/login'; }
+}
+
+function updateSidebar() {
+  const name = me.nameBn||me.nameEn||'ব্যবহারকারী';
+  document.getElementById('sb-name').textContent = name;
+  document.getElementById('sb-mobile').textContent = me.mobile||'';
+  document.getElementById('sb-avatar').textContent = name[0]||'?';
+  document.getElementById('topbar-avatar').textContent = name[0]||'?';
+  document.getElementById('welcome').textContent = `স্বাগতম, ${me.nameBn}! 👋`;
+  document.getElementById('profile-avatar-big').textContent = name[0]||'?';
+  document.getElementById('pf-name-big').textContent = me.nameBn||'—';
+  document.getElementById('pf-union-big').textContent = me.union||'ইউনিয়ন পরিষদ';
+}
+
+function tick() {
+  const n=new Date();
+  const de=document.getElementById('clock-date'), te=document.getElementById('clock-time');
+  if(de) de.textContent=n.toLocaleDateString('bn-BD',{weekday:'short',month:'short',day:'numeric'});
+  if(te) te.textContent=n.toLocaleTimeString('bn-BD');
+}
+
+// ── LOAD APPS ──
+async function loadApps() {
+  const r = await fetch('/api/user/applications',{credentials:'include'});
+  myApps = r.ok ? await r.json() : [];
+  updateStats();
+  renderRecent();
+  renderChart();
+  renderTrackQuick();
+  // pending badge
+  const pnd = myApps.filter(a=>a.status==='pending').length;
+  const badge = document.getElementById('sb-pend-badge');
+  badge.textContent = pnd; badge.style.display = pnd?'inline':'none';
+}
+
+function updateStats() {
+  const tot=myApps.length, pnd=myApps.filter(a=>a.status==='pending'||a.status==='processing').length;
+  const apv=myApps.filter(a=>a.status==='approved').length, rej=myApps.filter(a=>a.status==='rejected').length;
+  animCount('st-tot',tot); animCount('st-pnd',pnd); animCount('st-apv',apv); animCount('st-rej',rej);
+  animCount('pf-tot',tot); animCount('pf-apv',apv); animCount('pf-pnd',pnd);
+  document.getElementById('apps-count').textContent = `মোট ${tot}টি আবেদন · ${tot} total applications`;
+}
+
+function animCount(id, target) {
+  const el=document.getElementById(id); if(!el)return;
+  let n=0, step=Math.max(1,Math.ceil(target/20));
+  const t=setInterval(()=>{n=Math.min(n+step,target);el.textContent=n.toLocaleString('bn-BD');if(n>=target)clearInterval(t);},40);
+}
+
+// ── CHART ──
+function renderChart() {
+  const pnd=myApps.filter(a=>a.status==='pending'||a.status==='processing').length;
+  const apv=myApps.filter(a=>a.status==='approved').length;
+  const rej=myApps.filter(a=>a.status==='rejected').length;
+  const legend=document.getElementById('chart-legend');
+
+  if (!myApps.length) {
+    legend.innerHTML='<div style="color:#9ca3af;font-size:.82rem;">কোনো আবেদন নেই · No applications yet</div>';
+    return;
+  }
+
+  const data=[pnd,apv,rej], labels=['অপেক্ষমাণ','অনুমোদিত','বাতিল'], colors=['#f59e0b','#10b981','#ef4444'];
+  legend.innerHTML = labels.map((l,i)=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;">
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <div style="width:10px;height:10px;border-radius:50%;background:${colors[i]};"></div>
+        <span style="font-size:.8rem;color:#374151;font-weight:500;">${l}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <span style="font-size:.85rem;font-weight:700;color:#1e293b;">${data[i]}</span>
+        <span style="font-size:.72rem;color:#9ca3af;">${myApps.length?(data[i]/myApps.length*100).toFixed(0):0}%</span>
+      </div>
+    </div>`).join('');
+
+  if(chart) chart.destroy();
+  chart=new Chart(document.getElementById('statusChart'),{
+    type:'doughnut',
+    data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:0,hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:true,cutout:'68%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw}`}}}}
+  });
+}
+
+// ── RECENT ──
+function renderRecent() {
+  const c=document.getElementById('recent-list');
+  if(!myApps.length){c.innerHTML='<div style="padding:2rem;text-align:center;color:#9ca3af;font-size:.85rem;">কোনো কার্যক্রম নেই · No activity yet</div>';return;}
+  c.innerHTML=myApps.slice(0,6).map((a,i)=>`
+    <div onclick="showAppDetail('${a.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.4rem;border-bottom:1px solid #f0f5f2;cursor:pointer;transition:background .15s;animation:slideIn .3s ease both;animation-delay:${i*.06}s;" onmouseover="this.style.background='#f8fbf8'" onmouseout="this.style.background='transparent'">
+      <div style="display:flex;align-items:center;gap:.8rem;">
+        <div style="width:36px;height:36px;background:#f0f5f2;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;">${a.typeIcon}</div>
+        <div>
+          <div style="font-size:.85rem;font-weight:600;color:#1e293b;">${a.typeName}</div>
+          <div style="font-size:.72rem;color:#9ca3af;margin-top:.1rem;">${a.id} · ${new Date(a.appliedAt).toLocaleDateString('bn-BD')}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:.7rem;">
+        <span class="badge ${getBadge(a.status)}">${getLabel(a.status)}</span>
+        <svg width="14" height="14" fill="none" stroke="#d1d5db" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </div>
+    </div>`).join('');
+}
+
+// ── MY APPS with SEARCH/FILTER ──
+function filterApps() {
+  const q=document.getElementById('search-apps').value.toLowerCase();
+  const st=document.getElementById('filter-status').value;
+  const tp=document.getElementById('filter-type').value;
+  let filtered=myApps.filter(a=>{
+    const matchQ=!q||a.typeName.includes(q)||a.id.toLowerCase().includes(q)||a.purpose.toLowerCase().includes(q);
+    const matchS=!st||a.status===st;
+    const matchT=!tp||a.type===tp;
+    return matchQ&&matchS&&matchT;
+  });
+  renderMyAppsList(filtered);
+}
+
+function clearFilters() {
+  document.getElementById('search-apps').value='';
+  document.getElementById('filter-status').value='';
+  document.getElementById('filter-type').value='';
+  renderMyAppsList(myApps);
+}
+
+function renderMyApps() { renderMyAppsList(myApps); }
+
+function renderMyAppsList(apps) {
+  const c=document.getElementById('myapps-list');
+  if(!apps.length){c.innerHTML='<div class="card" style="padding:2.5rem;text-align:center;color:#9ca3af;">কোনো আবেদন পাওয়া যায়নি · No applications found</div>';return;}
+  c.innerHTML=apps.map((a,i)=>`
+    <div class="card mb-3" style="animation:slideIn .3s ease both;animation-delay:${i*.05}s;">
+      <div style="padding:1rem 1.3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.7rem;">
+        <div style="display:flex;align-items:center;gap:.9rem;">
+          <div style="width:44px;height:44px;background:#f0f5f2;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;border:2px solid #e8ede9;">${a.typeIcon}</div>
+          <div>
+            <div style="font-weight:700;color:#1e293b;font-size:.9rem;">${a.typeName}</div>
+            <div style="display:flex;align-items:center;gap:.8rem;margin-top:.2rem;flex-wrap:wrap;">
+              <span style="font-size:.72rem;color:#9ca3af;font-family:monospace;">${a.id}</span>
+              <span style="font-size:.72rem;color:#9ca3af;">· ${new Date(a.appliedAt).toLocaleDateString('bn-BD')}</span>
+              <span style="font-size:.72rem;color:#6b7280;">· ${a.purpose||'—'}</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+          <span class="badge ${getBadge(a.status)}">${getLabel(a.status)}</span>
+          <button onclick="showAppDetail('${a.id}')" class="btn btn-ghost" style="font-size:.76rem;padding:.35rem .7rem;">বিস্তারিত / Details</button>
+          ${a.status==='approved'?`<button onclick="openCert('${a.id}')" class="btn btn-g" style="font-size:.76rem;padding:.35rem .7rem;">📥 PDF</button>`:''}
+        </div>
+      </div>
+      <!-- Progress bar -->
+      <div style="padding:0 1.3rem .8rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.3rem;">
+          <span style="font-size:.7rem;color:#9ca3af;">প্রগতি / Progress</span>
+          <span style="font-size:.7rem;color:#9ca3af;">${{pending:'৩৩%',processing:'৬৬%',approved:'১০০%',rejected:'—'}[a.status]||'—'}</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${{pending:'33',processing:'66',approved:'100',rejected:'20'}[a.status]||'10'}%;background:${a.status==='rejected'?'#ef4444':'linear-gradient(90deg,var(--g),var(--gold))'}"></div></div>
+      </div>
+      ${a.adminComment?`<div style="padding:.6rem 1.3rem .8rem;"><div style="padding:.5rem .9rem;border-radius:8px;background:#fffbeb;border:1px solid #fde68a;font-size:.78rem;color:#92400e;">💬 <strong>অ্যাডমিন:</strong> ${a.adminComment}</div></div>`:''}
+    </div>`).join('');
+}
+
+// ── CERTS ──
+function renderCerts() {
+  const approved=myApps.filter(a=>a.status==='approved');
+  const c=document.getElementById('certs-grid');
+  if(!approved.length){c.innerHTML='<div class="card" style="grid-column:1/-1;padding:3rem;text-align:center;color:#9ca3af;">এখনো কোনো সনদ অনুমোদিত হয়নি · No certificates approved yet</div>';return;}
+  c.innerHTML=approved.map(a=>`
+    <div class="cert-card card">
+      <div style="background:linear-gradient(135deg,var(--g),#004d38);padding:1.3rem 1.5rem;display:flex;align-items:center;gap:.9rem;">
+        <div style="width:48px;height:48px;background:rgba(255,255,255,.12);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">${a.typeIcon}</div>
+        <div style="flex:1;">
+          <div style="font-family:'Noto Serif Bengali',serif;font-weight:700;color:#fff;font-size:.95rem;">${a.typeName}</div>
+          <div style="font-size:.72rem;color:rgba(255,255,255,.55);font-family:monospace;margin-top:.2rem;">${a.id}</div>
+        </div>
+        <div style="background:rgba(255,255,255,.12);padding:.3rem .6rem;border-radius:20px;border:1px solid rgba(255,255,255,.2);">
+          <span style="color:#fff;font-size:.72rem;font-weight:600;">✅ অনুমোদিত</span>
+        </div>
+      </div>
+      <div style="padding:1.1rem 1.5rem;background:#fff;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.9rem;">
+          <div>
+            <div style="font-size:.72rem;color:#9ca3af;">অনুমোদনকারী / Approved by</div>
+            <div style="font-size:.82rem;font-weight:600;color:#374151;">${a.approvedBy||'ইউপি কর্তৃপক্ষ'}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.72rem;color:#9ca3af;">তারিখ / Date</div>
+            <div style="font-size:.82rem;font-weight:600;color:#374151;">${new Date(a.approvedAt||a.updatedAt).toLocaleDateString('bn-BD')}</div>
+          </div>
+        </div>
+        <button onclick="openCert('${a.id}')" class="btn btn-g" style="width:100%;justify-content:center;padding:.75rem;">
+          📥 PDF ডাউনলোড / Download Certificate
+        </button>
+      </div>
+    </div>`).join('');
+}
+
+// ── APPLY ──
+let selectedCertType=null, selectedCertName=null, selectedCertIcon=null;
+
+function selectCertType(type,name,icon){
+  selectedCertType=type; selectedCertName=name; selectedCertIcon=icon;
+  document.querySelectorAll('.cert-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('ct-'+type)?.classList.add('selected');
+  updateDynamic(type);
+  document.getElementById('apply-step2').classList.remove('hidden');
+  document.getElementById('apply-step2').scrollIntoView({behavior:'smooth',block:'start'});
+  prefillApply();
+}
+
+const dynConfig={
+  character:[],
+  death:[
+    {id:'d-name-bn',label:'মৃত ব্যক্তির নাম (বাংলা) / Deceased Name *',type:'text',ph:'মৃত ব্যক্তির নাম',key:'deceased-name-bn'},
+    {id:'d-name-en',label:'Deceased Name (English)',type:'text',ph:'Deceased name',key:'deceased-name-en'},
+    {id:'d-date',label:'মৃত্যুর তারিখ / Date of Death *',type:'date',ph:'',key:'death-date'},
+    {id:'d-cause',label:'মৃত্যুর কারণ / Cause of Death *',type:'text',ph:'হৃদরোগ, দুর্ঘটনা...',key:'death-cause-bn'},
+    {id:'d-place',label:'মৃত্যুস্থান / Place of Death',type:'text',ph:'হাসপাতাল/গ্রাম',key:'death-place'},
+  ],
+  income:[
+    {id:'i-amount',label:'বার্ষিক আয় টাকায় / Annual Income (BDT) *',type:'number',ph:'যেমন: 150000',key:'annual-income'},
+    {id:'i-source',label:'আয়ের উৎস / Source of Income *',type:'text',ph:'কৃষি / ব্যবসা / চাকরি',key:'income-source'},
+  ],
+  birth:[
+    {id:'b-name-bn',label:'শিশুর নাম (বাংলা) / Child Name *',type:'text',ph:'',key:'child-name-bn'},
+    {id:'b-name-en',label:"Child's Name (English)",type:'text',ph:'',key:'child-name-en'},
+    {id:'b-dob',label:'জন্ম তারিখ / Date of Birth *',type:'date',ph:'',key:'child-dob'},
+    {id:'b-place',label:'জন্মস্থান / Place of Birth *',type:'text',ph:'হাসপাতাল/গ্রাম',key:'birth-place'},
+  ],
+  inheritance:[
+    {id:'inh-dec',label:'মৃত ব্যক্তির নাম / Deceased Name *',type:'text',ph:'',key:'deceased-name-bn'},
+    {id:'inh-date',label:'মৃত্যুর তারিখ / Death Date *',type:'date',ph:'',key:'death-date'},
+    {id:'inh-count',label:'মোট ওয়ারিশ / Total Heirs *',type:'number',ph:'',key:'heirs-count'},
+    {id:'inh-names',label:'ওয়ারিশদের নাম ও সম্পর্ক / Heir Names & Relations *',type:'textarea',ph:'রহিম (পুত্র), করিম (পুত্র)...',key:'heirs-names'},
+  ]
+};
+
+function updateDynamic(type){
+  const df=document.getElementById('dyn-fields');
+  const fields=dynConfig[type]||[];
+  if(!fields.length){df.innerHTML='<div style="color:#6b7280;font-size:.84rem;padding:.5rem;background:#f0fdf4;border-radius:8px;">✅ এই সনদের জন্য অতিরিক্ত তথ্য লাগবে না · No extra info needed for this certificate</div>';return;}
+  df.innerHTML=fields.map(f=>`
+    <div>
+      <label style="display:block;font-size:.8rem;font-weight:600;color:#374151;margin-bottom:.4rem;">${f.label}</label>
+      ${f.type==='textarea'
+        ?`<textarea id="${f.id}" class="form-input" rows="2" placeholder="${f.ph}" data-key="${f.key}"></textarea>`
+        :`<input type="${f.type}" id="${f.id}" class="form-input" placeholder="${f.ph}" data-key="${f.key}">`}
+    </div>`).join('');
+}
+
+function prefillApply(){
+  if(!me)return;
+  document.getElementById('an-bn').value=me.nameBn||'';
+  document.getElementById('an-en').value=me.nameEn||'';
+  document.getElementById('af-bn').value=me.fatherBn||'';
+  document.getElementById('am-bn').value=me.motherBn||'';
+  document.getElementById('a-nid').value=me.nid||'';
+  document.getElementById('a-mob').value=me.mobile||'';
+}
+
+function quickApply(type,name,icon){
+  show('apply');
+  setTimeout(()=>selectCertType(type,name,icon),120);
+}
+
+async function submitApp(){
+  if(!selectedCertType){showNotif('সনদের ধরন নির্বাচন করুন','e');return;}
+  const purpose=document.getElementById('app-purpose').value;
+  const confirm=document.getElementById('app-confirm').checked;
+  const lang=document.querySelector('input[name="cert-lang"]:checked')?.value||'bn';
+  if(!purpose){showNotif('উদ্দেশ্য নির্বাচন করুন / Select purpose','e');return;}
+  if(!confirm){showNotif('তথ্য নিশ্চিত করুন / Please confirm the info','e');return;}
+  const extraData={};
+  document.querySelectorAll('#dyn-fields [data-key]').forEach(el=>{extraData[el.dataset.key]=el.value;});
+  const btn=document.getElementById('submit-btn');
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spinner"></span> জমা হচ্ছে...';btn.disabled=true;
+  try{
+    const r=await fetch('/api/user/apply',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:selectedCertType,typeName:selectedCertName,typeIcon:selectedCertIcon,purpose,note:document.getElementById('app-note').value,extraData,lang})});
+    const data=await r.json();
+    if(!r.ok){showNotif(data.error||'ত্রুটি','e');btn.innerHTML=orig;btn.disabled=false;return;}
+    showNotif(`✅ আবেদন (${data.application?.id}) সফলভাবে জমা হয়েছে!`,'s');
+    await loadApps();
+    // Reset
+    document.querySelectorAll('.cert-btn').forEach(b=>b.classList.remove('selected'));
+    document.getElementById('apply-step2').classList.add('hidden');
+    document.getElementById('app-purpose').value='';
+    document.getElementById('app-note').value='';
+    document.getElementById('app-confirm').checked=false;
+    selectedCertType=null;
+    btn.innerHTML=orig;btn.disabled=false;
+    show('myapps');
+  }catch(e){showNotif('সার্ভার সংযোগ ব্যর্থ','e');btn.innerHTML=orig;btn.disabled=false;}
+}
+
+// ── TRACK ──
+function renderTrackQuick(){
+  const c=document.getElementById('track-quick');
+  c.innerHTML=myApps.slice(0,5).map(a=>`
+    <button onclick="quickTrack('${a.id}')" style="padding:.25rem .7rem;border-radius:20px;border:1.5px solid #e2e8f0;background:#fff;font-size:.75rem;cursor:pointer;color:#374151;font-family:'Noto Sans Bengali',sans-serif;transition:all .2s;" onmouseover="this.style.borderColor='var(--g)'" onmouseout="this.style.borderColor='#e2e8f0'">${a.id}</button>`).join('');
+}
+function quickTrack(id){document.getElementById('track-input').value=id;trackApp();}
+function trackApp(){
+  const id=document.getElementById('track-input').value.trim().toUpperCase();
+  const app=myApps.find(a=>a.id===id);
+  const c=document.getElementById('track-result');
+  if(!app){c.innerHTML=`<div class="card" style="padding:1.3rem;"><div style="display:flex;align-items:center;gap:.7rem;color:#dc2626;"><span style="font-size:1.2rem;">⚠️</span><div><div style="font-weight:600;">পাওয়া যায়নি / Not Found</div><div style="font-size:.8rem;color:#6b7280;margin-top:.2rem;">"${id}" নামে কোনো আবেদন নেই</div></div></div></div>`;return;}
+  const steps=[
+    {label:'আবেদন জমা / Submitted',done:true},
+    {label:'পর্যালোচনাধীন / Under Review',done:app.status!=='pending'},
+    {label:'সিদ্ধান্ত / Decision',done:app.status==='approved'||app.status==='rejected'},
+    {label:'সনদ প্রস্তুত / Certificate Ready',done:app.status==='approved'},
+  ];
+  c.innerHTML=`
+    <div class="card">
+      <div style="padding:1.2rem 1.4rem;background:linear-gradient(135deg,#f0fdf4,#fff);border-radius:16px 16px 0 0;border-bottom:1px solid #e8ede9;">
+        <div style="display:flex;align-items:center;gap:.8rem;">
+          <span style="font-size:1.8rem;">${app.typeIcon}</span>
+          <div>
+            <div style="font-weight:700;color:#1e293b;">${app.typeName}</div>
+            <div style="font-size:.75rem;color:#9ca3af;font-family:monospace;">${app.id}</div>
+          </div>
+          <span class="badge ${getBadge(app.status)}" style="margin-left:auto;">${getLabel(app.status)}</span>
+        </div>
+      </div>
+      <div style="padding:1.2rem 1.4rem;">
+        <div style="margin-bottom:1.2rem;">
+          ${steps.map((s,i)=>`
+            <div style="display:flex;align-items:center;gap:.8rem;padding:.5rem;border-radius:8px;background:${s.done?'#f0fdf4':'#f9fafb'};margin-bottom:.4rem;">
+              <div style="width:28px;height:28px;border-radius:50%;background:${s.done?'var(--g)':'#e5e7eb'};display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700;flex-shrink:0;">${s.done?'✓':i+1}</div>
+              <div style="font-size:.82rem;font-weight:${s.done?600:400};color:${s.done?'#065f46':'#9ca3af'};">${s.label}</div>
+            </div>`).join('')}
+        </div>
+        <div style="border-top:1px solid #f0f5f2;padding-top:1rem;">
+          <div style="font-weight:700;color:#1e293b;font-size:.85rem;margin-bottom:.6rem;">📅 টাইমলাইন / Timeline</div>
+          ${(app.timeline||[]).map(t=>`
+            <div style="display:flex;gap:.7rem;padding:.5rem 0;border-bottom:1px solid #f9fafb;">
+              <div style="width:6px;height:6px;border-radius:50%;background:var(--g);margin-top:5px;flex-shrink:0;"></div>
+              <div>
+                <div style="font-size:.82rem;font-weight:500;color:#374151;">${t.action}</div>
+                <div style="font-size:.72rem;color:#9ca3af;margin-top:.1rem;">${new Date(t.time).toLocaleString('bn-BD')} · ${t.by}</div>
+              </div>
+            </div>`).join('')}
+        </div>
+        ${app.status==='approved'?`<button onclick="openCert('${app.id}')" class="btn btn-g" style="width:100%;justify-content:center;margin-top:1rem;padding:.75rem;">📥 সনদ ডাউনলোড / Download Certificate</button>`:''}
+      </div>
+    </div>`;
+}
+
+// ── APP DETAIL MODAL ──
+function showAppDetail(appId){
+  const app=myApps.find(a=>a.id===appId); if(!app)return;
+  document.getElementById('app-modal-body').innerHTML=`
+    <div class="space-y-4">
+      <div style="display:flex;align-items:center;gap:.9rem;padding:1rem;border-radius:12px;background:#f0fdf4;">
+        <span style="font-size:2.2rem;">${app.typeIcon}</span>
+        <div style="flex:1;">
+          <div style="font-weight:700;color:#1e293b;font-size:1rem;">${app.typeName}</div>
+          <div style="font-size:.75rem;color:#6b7280;font-family:monospace;">${app.id}</div>
+        </div>
+        <span class="badge ${getBadge(app.status)}">${getLabel(app.status)}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
+        ${[['উদ্দেশ্য / Purpose',app.purpose],['তারিখ / Date',new Date(app.appliedAt).toLocaleDateString('bn-BD')],['আপডেট',new Date(app.updatedAt).toLocaleDateString('bn-BD')],['ইউনিয়ন',app.userUnion||'—']].map(([k,v])=>`<div style="padding:.7rem;background:#f8fafc;border-radius:8px;"><div style="font-size:.7rem;color:#9ca3af;margin-bottom:.2rem;">${k}</div><div style="font-weight:600;color:#374151;font-size:.85rem;">${v||'—'}</div></div>`).join('')}
+      </div>
+      ${app.adminComment?`<div style="padding:.8rem;border-radius:10px;background:#fffbeb;border:1px solid #fde68a;"><div style="font-size:.78rem;color:#92400e;"><strong>💬 অ্যাডমিন মন্তব্য / Admin Note:</strong> ${app.adminComment}</div></div>`:''}
+      <div>
+        <div style="font-weight:700;color:#1e293b;font-size:.85rem;margin-bottom:.6rem;">📊 টাইমলাইন / Timeline</div>
+        ${(app.timeline||[]).map(t=>`<div style="display:flex;gap:.7rem;padding:.5rem;background:#f9fafb;border-radius:8px;margin-bottom:.35rem;"><div style="width:22px;height:22px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.65rem;flex-shrink:0;">✓</div><div><div style="font-size:.82rem;font-weight:500;color:#374151;">${t.action}</div><div style="font-size:.7rem;color:#9ca3af;margin-top:.1rem;">${new Date(t.time).toLocaleString('bn-BD')} · ${t.by}</div></div></div>`).join('')}
+      </div>
+      ${app.status==='approved'?`<button onclick="openCert('${app.id}');closeModal()" class="btn btn-g" style="width:100%;justify-content:center;padding:.8rem;">📥 PDF ডাউনলোড / Download Certificate</button>`:''}
+    </div>`;
+  document.getElementById('app-modal').classList.remove('hidden');
+}
+
+function openCert(id){window.open(`/certificate?id=${id}`,'_blank');}
+
+// ── PROFILE ──
+function renderProfile(){
+  if(!me)return;
+  document.getElementById('profile-view').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      ${[['নাম (বাংলা)',me.nameBn],['Name (English)',me.nameEn],['পিতার নাম',me.fatherBn],['মাতার নাম',me.motherBn],['জন্ম তারিখ',me.dob],['NID নম্বর',me.nid],['মোবাইল',me.mobile],['ইউনিয়ন',me.union]].map(([k,v])=>`<div style="padding:.8rem;background:#f8fafc;border-radius:10px;"><div style="font-size:.72rem;color:#9ca3af;margin-bottom:.2rem;">${k}</div><div style="font-weight:600;color:#1e293b;font-size:.88rem;">${v||'—'}</div></div>`).join('')}
+    </div>
+    <div style="margin-top:1rem;padding:.8rem;background:#f8fafc;border-radius:10px;"><div style="font-size:.72rem;color:#9ca3af;margin-bottom:.2rem;">ঠিকানা / Address</div><div style="font-weight:600;color:#1e293b;font-size:.88rem;">${me.addressBn||'—'}</div></div>`;
+  document.getElementById('pe-nameBn').value=me.nameBn||'';
+  document.getElementById('pe-nameEn').value=me.nameEn||'';
+  document.getElementById('pe-fatherBn').value=me.fatherBn||'';
+  document.getElementById('pe-fatherEn').value=me.fatherEn||'';
+  document.getElementById('pe-addressBn').value=me.addressBn||'';
+}
+let editing=false;
+function toggleEdit(){
+  editing=!editing;
+  document.getElementById('profile-view').classList.toggle('hidden',editing);
+  document.getElementById('profile-edit-form').classList.toggle('hidden',!editing);
+  document.getElementById('edit-btn').textContent=editing?'← বাতিল':'✏️ সম্পাদনা';
+}
+async function saveProfile(){
+  const body={nameBn:document.getElementById('pe-nameBn').value,nameEn:document.getElementById('pe-nameEn').value,fatherBn:document.getElementById('pe-fatherBn').value,fatherEn:document.getElementById('pe-fatherEn').value,addressBn:document.getElementById('pe-addressBn').value};
+  const r=await fetch('/api/user/profile',{method:'PUT',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const data=await r.json();
+  if(!r.ok){showNotif(data.error||'ত্রুটি','e');return;}
+  me={...me,...body};renderProfile();toggleEdit();updateSidebar();
+  showNotif('✅ প্রোফাইল আপডেট হয়েছে / Profile updated','s');
+}
+
+// ── NAV ──
+function show(pg){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav-btn').forEach(n=>n.classList.remove('on'));
+  document.getElementById(`p-${pg}`).classList.add('on');
+  const titles={home:'ড্যাশবোর্ড / Dashboard',apply:'নতুন আবেদন / Apply',myapps:'আমার আবেদন / My Applications',certs:'অনুমোদিত সনদ / Certificates',track:'ট্র্যাক / Track',profile:'আমার প্রোফাইল / My Profile',help:'সাহায্য / Help'};
+  const subs={home:'আপনার সেবার সারসংক্ষেপ · Your service summary',apply:'নতুন সনদের জন্য আবেদন · Apply for a new certificate',myapps:'আপনার সকল আবেদন · All your applications',certs:'অনুমোদিত সনদ দেখুন ও ডাউনলোড করুন',track:'আবেদনের বর্তমান অবস্থা দেখুন',profile:'আপনার তথ্য দেখুন ও আপডেট করুন',help:'সাহায্য ও তথ্য'};
+  document.getElementById('page-title').textContent=titles[pg]||pg;
+  document.getElementById('page-sub').textContent=subs[pg]||'';
+  if(pg==='myapps')renderMyApps();
+  if(pg==='certs')renderCerts();
+}
+
+function closeModal(){document.getElementById('app-modal').classList.add('hidden');}
+document.getElementById('app-modal').addEventListener('click',e=>{if(e.target===document.getElementById('app-modal'))closeModal();});
+
+async function logout(){await fetch('/api/auth/logout',{method:'POST',credentials:'include'});window.location.href='/login';}
+
+function getBadge(s){return{pending:'bp',processing:'bpr',approved:'ba',rejected:'br'}[s]||'bp';}
+function getLabel(s){return{pending:'⏳ অপেক্ষমাণ',processing:'🔄 প্রক্রিয়াধীন',approved:'✅ অনুমোদিত',rejected:'❌ বাতিল'}[s]||s;}
+function showNotif(msg,type='s'){const n=document.getElementById('notif');n.textContent=msg;n.className=`notif ${type}`;n.classList.add('show');setTimeout(()=>n.classList.remove('show'),4500);}
+
+init();
+</script>
+</body>
+</html>

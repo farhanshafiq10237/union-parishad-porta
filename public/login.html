@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>লগইন | ইউনিয়ন পরিষদ পোর্টাল</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@300;400;500;600&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root{--g:#006A4E;--gd:#004d38;--gl:#e6f3ef;--gold:#C9A84C;--red:#F42A41;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans Bengali',sans-serif;min-height:100vh;overflow-x:hidden;background:#04110d;}
+
+/* ── ANIMATED BG ── */
+.bg-scene{position:fixed;inset:0;z-index:0;overflow:hidden;}
+.bg-scene canvas{position:absolute;inset:0;width:100%;height:100%;}
+.bg-grad{position:absolute;inset:0;background:
+  radial-gradient(ellipse 80% 60% at 15% 30%,rgba(0,106,78,.35) 0%,transparent 60%),
+  radial-gradient(ellipse 60% 70% at 85% 75%,rgba(201,168,76,.12) 0%,transparent 55%),
+  radial-gradient(ellipse 50% 40% at 50% 0%,rgba(244,42,65,.07) 0%,transparent 50%),
+  linear-gradient(180deg,#030e08 0%,#041509 50%,#061c0a 100%);}
+.floating-shape{position:absolute;border-radius:50%;filter:blur(80px);animation:floatShape 12s ease-in-out infinite;}
+
+/* ── SPLIT LAYOUT ── */
+.split-left{position:relative;z-index:2;width:46%;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:4rem 3rem 4rem 5rem;border-right:1px solid rgba(201,168,76,.1);}
+.split-right{position:relative;z-index:2;width:54%;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:3rem 4rem;}
+
+/* ── GLASS CARD ── */
+.glass{background:rgba(255,255,255,.04);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);border-radius:24px;}
+
+/* ── INPUTS ── */
+.field-wrap{position:relative;}
+.field-label{display:block;font-size:.78rem;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:.5rem;letter-spacing:.05em;text-transform:uppercase;}
+.field-input{width:100%;padding:.85rem 1.1rem;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:12px;font-family:'Noto Sans Bengali',sans-serif;font-size:.95rem;color:#fff;outline:none;transition:all .3s;}
+.field-input::placeholder{color:rgba(255,255,255,.25);}
+.field-input:focus{border-color:var(--gold);background:rgba(255,255,255,.09);box-shadow:0 0 0 4px rgba(201,168,76,.1);}
+.pass-toggle{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;padding:.3rem;transition:color .2s;}
+.pass-toggle:hover{color:var(--gold);}
+
+/* ── BTN ── */
+.btn-login{width:100%;padding:.95rem;background:linear-gradient(135deg,var(--gold) 0%,#a8883a 100%);color:#0a1a0e;border:none;border-radius:12px;font-family:'Noto Sans Bengali',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .3s;letter-spacing:.02em;position:relative;overflow:hidden;}
+.btn-login::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);opacity:0;transition:opacity .3s;}
+.btn-login:hover::before{opacity:1;}
+.btn-login:hover{transform:translateY(-2px);box-shadow:0 12px 30px -8px rgba(201,168,76,.5);}
+.btn-login:active{transform:translateY(0);}
+
+/* ── STAT CHIPS ── */
+.stat-chip{display:flex;align-items:center;gap:.8rem;padding:1rem 1.3rem;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);}
+.stat-num{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--gold);line-height:1;}
+.stat-sub{font-size:.72rem;color:rgba(255,255,255,.4);margin-top:.2rem;font-weight:500;}
+
+/* ── CERT TYPE PILLS ── */
+.cert-pill{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .85rem;border-radius:20px;background:rgba(0,106,78,.2);border:1px solid rgba(0,106,78,.3);font-size:.78rem;color:#6ee7b7;font-weight:500;}
+
+/* ── DEMO BTNS ── */
+.demo-btn{display:flex;align-items:center;gap:.7rem;padding:.7rem 1rem;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);cursor:pointer;transition:all .25s;width:100%;}
+.demo-btn:hover{background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.3);}
+.demo-avatar{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;flex-shrink:0;}
+
+/* ── NOTIFICATIONS ── */
+.notif{position:fixed;top:20px;right:20px;z-index:9999;padding:1rem 1.5rem;border-radius:14px;color:#fff;font-size:.9rem;font-weight:500;transform:translateX(130%) scale(.95);opacity:0;transition:all .5s cubic-bezier(.34,1.56,.64,1);box-shadow:0 10px 40px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);}
+.notif.show{transform:translateX(0) scale(1);opacity:1;}
+.notif.s{background:linear-gradient(135deg,#059669,#047857);}
+.notif.e{background:linear-gradient(135deg,#e11d48,#be123c);}
+
+/* ── ANIMATIONS ── */
+@keyframes floatShape{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.05)}66%{transform:translate(-20px,15px) scale(.95)}}
+@keyframes slideLeft{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideRight{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes countUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.anim-left{animation:slideLeft .7s cubic-bezier(.16,1,.3,1) both;}
+.anim-right{animation:slideRight .7s cubic-bezier(.16,1,.3,1) both;}
+.anim-d1{animation-delay:.1s}.anim-d2{animation-delay:.2s}.anim-d3{animation-delay:.3s}.anim-d4{animation-delay:.4s}.anim-d5{animation-delay:.5s}
+.spinner{width:18px;height:18px;border:2.5px solid rgba(0,0,0,.2);border-top-color:#0a1a0e;border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle;}
+
+/* FLAG BAR */
+.flag-line{position:fixed;top:0;left:0;right:0;height:3px;z-index:100;background:linear-gradient(90deg,var(--g) 50%,var(--red) 50%);}
+
+@media(max-width:768px){
+  .split-left{display:none;}
+  .split-right{width:100%;padding:2rem 1.5rem;}
+}
+</style>
+</head>
+<body class="flex">
+<div class="flag-line"></div>
+<div class="bg-scene">
+  <div class="bg-grad"></div>
+  <div class="floating-shape" style="width:400px;height:400px;background:rgba(0,106,78,.15);top:-100px;left:-100px;animation-duration:15s;"></div>
+  <div class="floating-shape" style="width:300px;height:300px;background:rgba(201,168,76,.08);bottom:-80px;right:-80px;animation-duration:18s;animation-delay:-6s;"></div>
+  <div class="floating-shape" style="width:200px;height:200px;background:rgba(244,42,65,.06);top:40%;right:20%;animation-duration:20s;animation-delay:-10s;"></div>
+</div>
+<div class="notif" id="notif"></div>
+
+<!-- LEFT: Info Panel -->
+<div class="split-left">
+  <div class="anim-left">
+    <div class="flex items-center gap-3 mb-10">
+      <div style="width:48px;height:48px;background:linear-gradient(135deg,var(--g),#004d38);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;border:1px solid rgba(201,168,76,.3);">🇧🇩</div>
+      <div>
+        <div style="font-family:'Noto Serif Bengali',serif;font-size:1rem;font-weight:700;color:#fff;">গণপ্রজাতন্ত্রী বাংলাদেশ</div>
+        <div style="font-size:.7rem;color:rgba(255,255,255,.4);letter-spacing:.05em;">People's Republic of Bangladesh</div>
+      </div>
+    </div>
+
+    <h1 style="font-family:'Noto Serif Bengali',serif;font-size:2.6rem;font-weight:800;color:#fff;line-height:1.2;margin-bottom:1rem;" class="anim-left anim-d1">
+      ইউনিয়ন পরিষদ<br>
+      <span style="color:var(--gold);">ডিজিটাল সেবা</span>
+    </h1>
+    <p style="color:rgba(255,255,255,.45);font-size:.92rem;line-height:1.7;max-width:340px;margin-bottom:2.5rem;" class="anim-left anim-d2">
+      Union Parishad Digital Service Portal — ঘরে বসেই সরকারি সনদ পান। Get government certificates from home.
+    </p>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 gap-3 mb-8 anim-left anim-d3">
+      <div class="stat-chip">
+        <div style="font-size:1.6rem;">📜</div>
+        <div>
+          <div class="stat-num" id="s1">০</div>
+          <div class="stat-sub">সনদ ইস্যু / Certs Issued</div>
+        </div>
+      </div>
+      <div class="stat-chip">
+        <div style="font-size:1.6rem;">👥</div>
+        <div>
+          <div class="stat-num" id="s2">০</div>
+          <div class="stat-sub">নিবন্ধিত / Registered</div>
+        </div>
+      </div>
+      <div class="stat-chip">
+        <div style="font-size:1.6rem;">⚡</div>
+        <div>
+          <div class="stat-num">২৪ঘ</div>
+          <div class="stat-sub">প্রক্রিয়াকরণ / Processing</div>
+        </div>
+      </div>
+      <div class="stat-chip">
+        <div style="font-size:1.6rem;">🏛️</div>
+        <div>
+          <div class="stat-num">১০০%</div>
+          <div class="stat-sub">সরকারি / Official</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Certificate types -->
+    <div class="anim-left anim-d4">
+      <div style="font-size:.7rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.7rem;">Available Certificates / উপলব্ধ সনদ</div>
+      <div class="flex flex-wrap gap-2">
+        <span class="cert-pill">📜 চারিত্রিক</span>
+        <span class="cert-pill">🏠 নাগরিক</span>
+        <span class="cert-pill">💰 আয়</span>
+        <span class="cert-pill">🕊️ মৃত্যু</span>
+        <span class="cert-pill">👶 জন্ম</span>
+        <span class="cert-pill">📋 ওয়ারিশ</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT: Login Form -->
+<div class="split-right">
+  <div class="w-full max-w-sm anim-right">
+
+    <div class="text-center mb-8">
+      <h2 style="font-family:'Noto Serif Bengali',serif;font-size:1.6rem;font-weight:700;color:#fff;margin-bottom:.4rem;">স্বাগতম 🔐</h2>
+      <p style="color:rgba(255,255,255,.4);font-size:.85rem;">আপনার নাগরিক অ্যাকাউন্টে প্রবেশ করুন<br><span style="font-size:.78rem;">Sign in to your citizen account</span></p>
+    </div>
+
+    <div class="glass p-7 space-y-5">
+      <div class="field-wrap">
+        <label class="field-label">মোবাইল নম্বর / Mobile</label>
+        <input type="tel" id="mobile" class="field-input" placeholder="০১XXXXXXXXX" maxlength="11" autofocus>
+      </div>
+
+      <div class="field-wrap">
+        <label class="field-label">পাসওয়ার্ড / Password</label>
+        <div style="position:relative;">
+          <input type="password" id="password" class="field-input" placeholder="••••••••" style="padding-right:3rem;">
+          <button type="button" onclick="togglePass()" class="pass-toggle">
+            <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between text-sm">
+        <label class="flex items-center gap-2 cursor-pointer" style="color:rgba(255,255,255,.5);font-size:.8rem;">
+          <input type="checkbox" id="remember" style="accent-color:var(--gold);width:14px;height:14px;">
+          মনে রাখুন / Remember me
+        </label>
+      </div>
+
+      <button id="login-btn" onclick="doLogin()" class="btn-login">লগইন করুন → Login</button>
+    </div>
+
+    <!-- Demo accounts -->
+    <div class="mt-5 glass p-4">
+      <div style="font-size:.72rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.8rem;">🧪 ডেমো অ্যাকাউন্ট / Demo Accounts</div>
+      <div class="space-y-2">
+        <button onclick="fillDemo('01712345678','user123')" class="demo-btn">
+          <div class="demo-avatar" style="background:rgba(0,106,78,.3);color:#6ee7b7;">র</div>
+          <div style="text-align:left;">
+            <div style="color:#fff;font-size:.82rem;font-weight:600;">মোঃ রহিম উদ্দিন</div>
+            <div style="color:rgba(255,255,255,.3);font-size:.72rem;">01712345678 · user123</div>
+          </div>
+        </button>
+        <button onclick="fillDemo('01812345678','user123')" class="demo-btn">
+          <div class="demo-avatar" style="background:rgba(201,168,76,.2);color:var(--gold);">ফা</div>
+          <div style="text-align:left;">
+            <div style="color:#fff;font-size:.82rem;font-weight:600;">ফাতেমা বেগম</div>
+            <div style="color:rgba(255,255,255,.3);font-size:.72rem;">01812345678 · user123</div>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <div class="mt-5 text-center space-y-2">
+      <div style="color:rgba(255,255,255,.4);font-size:.82rem;">
+        অ্যাকাউন্ট নেই? <a href="/register" style="color:var(--gold);font-weight:600;">নিবন্ধন করুন / Register</a>
+      </div>
+      <div>
+        <a href="/admin" style="color:rgba(255,255,255,.25);font-size:.75rem;transition:color .2s;" onmouseover="this.style.color='rgba(255,255,255,.6)'" onmouseout="this.style.color='rgba(255,255,255,.25)'">
+          🛡️ সরকারি কর্মকর্তা প্রবেশ / Admin Login
+        </a>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:2.5rem;color:rgba(255,255,255,.15);font-size:.7rem;">
+      © ২০২৪ গণপ্রজাতন্ত্রী বাংলাদেশ সরকার · All Rights Reserved
+    </div>
+  </div>
+</div>
+
+<script>
+// Animate counters
+function animateCount(el, target, suffix='') {
+  let n=0, step=Math.ceil(target/40);
+  const timer=setInterval(()=>{
+    n=Math.min(n+step,target);
+    el.textContent=n.toLocaleString('bn-BD')+suffix;
+    if(n>=target)clearInterval(timer);
+  },30);
+}
+setTimeout(()=>{
+  animateCount(document.getElementById('s1'),1247);
+  animateCount(document.getElementById('s2'),384);
+},600);
+
+function togglePass(){
+  const p=document.getElementById('password');
+  p.type=p.type==='password'?'text':'password';
+}
+function fillDemo(m,p){
+  document.getElementById('mobile').value=m;
+  document.getElementById('password').value=p;
+}
+function showNotif(msg,type='s'){
+  const n=document.getElementById('notif');
+  n.textContent=msg;n.className=`notif ${type}`;n.classList.add('show');
+  setTimeout(()=>n.classList.remove('show'),4000);
+}
+async function doLogin(){
+  const mobile=document.getElementById('mobile').value.trim();
+  const password=document.getElementById('password').value;
+  if(!mobile||!password){showNotif('মোবাইল ও পাসওয়ার্ড দিন / Enter mobile & password','e');return;}
+  const btn=document.getElementById('login-btn');
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spinner"></span> যাচাই হচ্ছে...';btn.disabled=true;
+  try{
+    const r=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mobile,password}),credentials:'include'});
+    const data=await r.json();
+    if(!r.ok){showNotif(data.error||'লগইন ব্যর্থ','e');btn.innerHTML=orig;btn.disabled=false;return;}
+    showNotif(`স্বাগতম, ${data.user.nameBn}! 🎉`,'s');
+    btn.innerHTML='✓ সফল';btn.style.background='#059669';
+    setTimeout(()=>window.location.href='/dashboard',900);
+  }catch(e){showNotif('সার্ভার সংযোগ ব্যর্থ','e');btn.innerHTML=orig;btn.disabled=false;}
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+fetch('/api/auth/me',{credentials:'include'}).then(r=>r.json()).then(d=>{
+  if(d.sessionRole==='user')window.location.href='/dashboard';
+  else if(['chairman','secretary','monitor'].includes(d.sessionRole))window.location.href='/admin';
+}).catch(()=>{});
+</script>
+</body>
+</html>

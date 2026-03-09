@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>সনদ পত্র | ইউনিয়ন পরিষদ</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;500;600;700;800;900&family=Noto+Sans+Bengali:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --g-dark: #004d38;
+  --g-main: #006A4E;
+  --gold-light: #E6C875;
+  --gold: #C9A84C;
+  --gold-dark: #9A7B2C;
+  --red: #D32F2F;
+  --paper: #FCFBF7;
+  --ink: #1F2937;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans Bengali', sans-serif; background: #e2e8f0; color: var(--ink); }
+
+/* Control Panel */
+.ctrl { background: #fff; padding: 1rem 2rem; display: flex; gap: 1rem; align-items: center; border-bottom: 1px solid #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; }
+.btn { padding: 0.6rem 1.2rem; border-radius: 8px; font-family: 'Noto Sans Bengali', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.3s; display: inline-flex; align-items: center; gap: 0.5rem; }
+.btn-back { background: #f1f5f9; color: #475569; } .btn-back:hover { background: #e2e8f0; }
+.btn-g { background: linear-gradient(135deg, var(--g-main), var(--g-dark)); color: #fff; box-shadow: 0 4px 10px rgba(0,106,78,0.3); } .btn-g:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,106,78,0.4); }
+.btn-gd { background: linear-gradient(135deg, #D4AF37, #AA8529); color: #fff; box-shadow: 0 4px 10px rgba(201,168,76,0.3); } .btn-gd:hover { transform: translateY(-2px); }
+
+/* Certificate Wrapper & Paper */
+.cert-wrap { max-width: 850px; margin: 2.5rem auto; position: relative; }
+.cert-paper { 
+  background-color: var(--paper);
+  /* Subtle certificate security pattern background */
+  background-image: 
+    radial-gradient(circle at center, rgba(201,168,76,0.03) 0%, transparent 100%),
+    repeating-linear-gradient(45deg, rgba(0,106,78,0.02) 0px, rgba(0,106,78,0.02) 2px, transparent 2px, transparent 8px);
+  box-shadow: 0 25px 60px -15px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Premium Multi-layered Border */
+.premium-border {
+  position: relative;
+  padding: 3.5rem;
+  border: 1px solid var(--gold-dark);
+  box-shadow: 
+    inset 0 0 0 8px var(--paper),
+    inset 0 0 0 11px var(--gold),
+    inset 0 0 0 16px var(--g-main),
+    inset 0 0 0 18px var(--gold-light),
+    inset 0 0 0 24px var(--paper),
+    inset 0 0 0 25px rgba(201,168,76,0.3);
+}
+
+/* Corner Ornaments */
+.corner { position: absolute; width: 40px; height: 40px; border: 4px solid var(--gold); z-index: 10; }
+.corner-tl { top: 22px; left: 22px; border-right: none; border-bottom: none; }
+.corner-tr { top: 22px; right: 22px; border-left: none; border-bottom: none; }
+.corner-bl { bottom: 22px; left: 22px; border-right: none; border-top: none; }
+.corner-br { bottom: 22px; right: 22px; border-left: none; border-top: none; }
+
+/* Header & Emblem */
+.cert-header { text-align: center; position: relative; z-index: 2; border-bottom: 2px solid rgba(201,168,76,0.3); padding-bottom: 1.5rem; margin-bottom: 2rem; }
+.emblem-wrapper { position: relative; display: inline-block; margin-bottom: 1rem; }
+.emblem { width: 85px; height: 85px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.8rem; border: 2px solid var(--gold); box-shadow: 0 4px 15px rgba(201,168,76,0.4), inset 0 0 15px rgba(201,168,76,0.2); position: relative; z-index: 2; }
+.emblem-bg { position: absolute; inset: -6px; background: linear-gradient(135deg, var(--gold-light), var(--gold-dark)); border-radius: 50%; z-index: 1; opacity: 0.5; filter: blur(4px); }
+.gov-title { font-family: 'Noto Serif Bengali', serif; font-size: 1.6rem; font-weight: 800; color: var(--g-dark); letter-spacing: 0.5px; text-shadow: 1px 1px 0 rgba(255,255,255,0.8); }
+.gov-subtitle { font-size: 0.85rem; color: #555; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; margin-top: 0.2rem; }
+.up-title { font-family: 'Noto Serif Bengali', serif; font-size: 1.25rem; font-weight: 700; color: var(--g-main); margin-top: 0.5rem; }
+
+/* Ribbon Title */
+.title-ribbon {
+  position: relative;
+  text-align: center;
+  margin: 2.5rem auto;
+  width: max-content;
+  max-width: 90%;
+}
+.title-ribbon h1 {
+  background: linear-gradient(to right, var(--g-dark), var(--g-main), var(--g-dark));
+  color: #fff;
+  padding: 0.8rem 3rem;
+  font-family: 'Noto Serif Bengali', serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  border-radius: 4px;
+  box-shadow: 0 10px 20px -5px rgba(0,106,78,0.4);
+  border: 1px solid var(--gold);
+  border-bottom: 3px solid var(--gold-dark);
+}
+
+/* Info & Body */
+.cert-meta { display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; color: #444; margin-bottom: 2rem; padding: 0 1rem; }
+.cert-meta span { background: rgba(201,168,76,0.1); padding: 0.3rem 0.8rem; border-radius: 4px; border: 1px dotted var(--gold); }
+
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem 2rem; margin-bottom: 2rem; padding: 1.5rem; background: rgba(255,255,255,0.6); border: 1px solid rgba(0,106,78,0.1); border-radius: 8px; }
+.info-item { display: flex; flex-direction: column; gap: 0.3rem; }
+.info-label { font-size: 0.8rem; color: #666; font-weight: 600; text-transform: uppercase; }
+.info-value { font-family: 'Noto Serif Bengali', serif; font-size: 1.15rem; font-weight: 700; color: var(--g-dark); border-bottom: 1px dashed #ccc; padding-bottom: 0.2rem; }
+
+.cert-body { font-family: 'Noto Serif Bengali', serif; font-size: 1.1rem; line-height: 2.2; color: #222; text-align: justify; margin: 2rem 0; padding: 0 1rem; position: relative; z-index: 2; }
+.highlight { font-weight: 800; color: var(--g-main); border-bottom: 2px solid rgba(201,168,76,0.5); padding: 0 0.2rem; }
+
+/* Admin Official Comment */
+.admin-comment {
+  margin: 2rem 1rem; padding: 1.2rem 1.5rem;
+  background: linear-gradient(to right, rgba(201,168,76,0.1), rgba(201,168,76,0.02));
+  border-left: 5px solid var(--gold);
+  border-radius: 0 8px 8px 0;
+  position: relative;
+}
+.admin-comment::before { content: '📌'; position: absolute; left: -14px; top: -10px; font-size: 1.2rem; background: #fff; border-radius: 50%; }
+.admin-comment p { font-family: 'Noto Serif Bengali', serif; font-size: 1.05rem; font-style: italic; color: var(--g-dark); font-weight: 600; }
+.admin-comment span { display: block; font-family: 'Noto Sans Bengali', sans-serif; font-size: 0.8rem; color: #777; margin-top: 0.4rem; font-style: normal; text-transform: uppercase; font-weight: bold; }
+
+/* Signatures & Footer */
+.cert-footer { margin-top: 4rem; display: flex; justify-content: space-between; align-items: flex-end; position: relative; z-index: 2; padding: 0 1rem; }
+.sig-box { text-align: center; width: 200px; }
+.sig-line { border-bottom: 1.5px solid var(--ink); margin-bottom: 0.5rem; position: relative; }
+.sig-box h4 { font-family: 'Noto Serif Bengali', serif; font-weight: 700; font-size: 1rem; color: var(--g-dark); }
+.sig-box p { font-size: 0.8rem; color: #666; }
+
+/* Realistic Official Stamp */
+.official-stamp {
+  position: absolute; left: 50%; transform: translateX(-50%) rotate(-10deg); top: -40px;
+  width: 110px; height: 110px; border: 4px double var(--g-main); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  color: var(--g-main); font-weight: 800; font-size: 0.65rem;
+  background: rgba(0,106,78,0.03); opacity: 0.85; mix-blend-mode: multiply;
+  box-shadow: inset 0 0 10px rgba(0,106,78,0.1); pointer-events: none;
+}
+.official-stamp::after { content: '★'; position: absolute; font-size: 1.5rem; color: rgba(201,168,76,0.6); }
+
+/* Bottom Verification Bar */
+.verify-bar { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; font-family: 'Courier New', monospace; font-size: 0.75rem; color: #666; }
+.qr-sim { display: flex; align-items: center; gap: 0.8rem; }
+.qr-box { width: 55px; height: 55px; background: #fff; padding: 4px; border: 1px solid #ccc; border-radius: 6px; background-image: repeating-linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000), repeating-linear-gradient(45deg, #000 25%, #fff 25%, #fff 75%, #000 75%, #000); background-position: 0 0, 4px 4px; background-size: 8px 8px; }
+.digital-verified { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--g-main); font-weight: bold; font-family: 'Noto Sans Bengali', sans-serif; background: rgba(0,106,78,0.1); padding: 0.3rem 0.6rem; border-radius: 20px; }
+
+/* Giant Watermark */
+.giant-watermark {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-35deg);
+  font-family: 'Noto Serif Bengali', serif; font-size: 6rem; font-weight: 900;
+  color: rgba(201,168,76,0.04); white-space: nowrap; pointer-events: none; z-index: 0;
+}
+
+@media print {
+  body { background: #fff; }
+  .ctrl { display: none !important; }
+  .cert-wrap { margin: 0; max-width: 100%; box-shadow: none; }
+  .cert-paper { box-shadow: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="ctrl">
+  <button onclick="window.close()" class="btn btn-back">
+    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> বন্ধ করে ফিরে যান
+  </button>
+  <button onclick="window.print()" class="btn btn-g">
+    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> প্রিন্ট করুন
+  </button>
+  <button onclick="window.print()" class="btn btn-gd">
+    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> PDF সেভ করুন
+  </button>
+  <div class="ml-auto flex items-center gap-2">
+    <label class="text-sm font-medium text-gray-500">সনদের ভাষা:</label>
+    <select onchange="setLang(this.value)" class="border border-gray-300 rounded-md px-3 py-1.5 text-sm font-semibold text-gray-700 bg-gray-50 focus:ring-2 focus:ring-[#006A4E] outline-none">
+      <option value="bn">বাংলা (Bengali)</option>
+      <option value="en">English (ইংরেজি)</option>
+      <option value="both">উভয় (Bilingual)</option>
+    </select>
+  </div>
+</div>
+
+<div class="cert-wrap" id="cert-wrap">
+  <div class="cert-paper" id="cert-content">
+    <div class="text-center p-12 text-gray-400 font-medium animate-pulse">সনদের তথ্য যাচাই করা হচ্ছে...</div>
+  </div>
+</div>
+
+<script>
+let app = null;
+let lang = 'bn';
+
+const typeNames = {
+  character:{bn:'চারিত্রিক সনদপত্র',en:'Character Certificate'},
+  death:{bn:'মৃত্যু সনদপত্র',en:'Death Certificate'},
+  residence:{bn:'নাগরিক সনদপত্র',en:'Citizenship Certificate'},
+  income:{bn:'বার্ষিক আয় সনদ',en:'Annual Income Certificate'},
+  birth:{bn:'জন্ম নিবন্ধন সনদ',en:'Birth Registration Certificate'},
+  inheritance:{bn:'ওয়ারিশ সনদপত্র',en:'Inheritance Certificate'},
+};
+
+const bodies = {
+  character: (a, l) => l==='en'
+    ? `This is to certify that <span class="highlight">${a.userNameEn||a.userName}</span>, son/daughter of <span class="highlight">${a.userFather||'—'}</span> and <span class="highlight">${a.userMother||'—'}</span>, holding NID No. <span class="highlight">${a.userNID}</span>, is a permanent resident of this Union Parishad. He/She is known to us as a person of good moral character. To the best of my knowledge, there is no criminal case or adverse record against him/her. This certificate is issued for the purpose of <span class="highlight">${a.purpose}</span>.`
+    : `এই মর্মে প্রত্যয়ন করা যাইতেছে যে, <span class="highlight">${a.userName}</span>, পিতা: <span class="highlight">${a.userFather||'—'}</span>, মাতা: <span class="highlight">${a.userMother||'—'}</span>, জাতীয় পরিচয়পত্র নম্বর: <span class="highlight">${a.userNID}</span> — তিনি এই ইউনিয়নের একজন স্থায়ী বাসিন্দা। আমাদের জানামতে তাঁহার স্বভাব ও চরিত্র সৎ ও নির্মল। রাষ্ট্র বা সমাজ বিরোধী কোনো কর্মকাণ্ডে তাঁহার সম্পৃক্ততা নাই এবং তাঁহার বিরুদ্ধে কোনো ফৌজদারি মামলা নাই। <span class="highlight">${a.purpose}</span> উদ্দেশ্যে এই সনদ প্রদান করা হইল। আমি তাঁহার সর্বাঙ্গীন উন্নতি ও মঙ্গল কামনা করি।`,
+  death: (a, l) => {
+    const dn = a.extraData?.['deceased-name-bn']||'মৃত ব্যক্তি', de = a.extraData?.['deceased-name-en']||'', dd = a.extraData?.['death-date']||'', dc = a.extraData?.['death-cause-bn']||'অজ্ঞাত';
+    return l==='en'
+      ? `This is to certify that <span class="highlight">${de||dn}</span>, previously a resident of this union, passed away on <span class="highlight">${dd}</span> due to <span class="highlight">${dc}</span>. This certificate is officially issued upon the request of <span class="highlight">${a.userNameEn||a.userName}</span> for the purpose of <span class="highlight">${a.purpose}</span>.`
+      : `এই মর্মে প্রত্যয়ন করা যাইতেছে যে, <span class="highlight">${dn}</span>, অত্র ইউনিয়নের একজন স্থায়ী বাসিন্দা ছিলেন। তিনি গত <span class="highlight">${dd}</span> তারিখে <span class="highlight">${dc}</span> জনিত কারণে মৃত্যুবরণ করেন। পরিবারের সদস্য <span class="highlight">${a.userName}</span>-এর আবেদনের প্রেক্ষিতে <span class="highlight">${a.purpose}</span> উদ্দেশ্যে সরকারি নথিপত্রের জন্য এই মৃত্যু সনদ প্রদান করা হইল।`;
+  },
+  residence: (a, l) => l==='en'
+    ? `This is to certify that <span class="highlight">${a.userNameEn||a.userName}</span>, son/daughter of <span class="highlight">${a.userFather}</span>, holding NID No. <span class="highlight">${a.userNID}</span>, is a permanent resident of this Union Parishad area. He/She is a law-abiding citizen of Bangladesh. This certificate is issued for <span class="highlight">${a.purpose}</span>.`
+    : `এই মর্মে প্রত্যয়ন করা যাইতেছে যে, <span class="highlight">${a.userName}</span>, পিতা: <span class="highlight">${a.userFather||'—'}</span>, জাতীয় পরিচয়পত্র নম্বর: <span class="highlight">${a.userNID}</span> — তিনি জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই ইউনিয়ন পরিষদ এলাকার একজন স্থায়ী বাসিন্দা। তিনি একজন শান্তিপ্রিয় ও আইন মান্যকারী নাগরিক। <span class="highlight">${a.purpose}</span> উদ্দেশ্যে এই নাগরিক সনদ প্রদান করা হইল।`,
+  income: (a, l) => {
+    const inc = a.extraData?.['annual-income']||'—', src = a.extraData?.['income-source']||'অজ্ঞাত';
+    return l==='en'
+      ? `This certifies that <span class="highlight">${a.userNameEn||a.userName}</span>, holding NID No. <span class="highlight">${a.userNID}</span>, is a resident of this Union. Based on our verification, his/her approximate annual income from <span class="highlight">${src}</span> is BDT <span class="highlight">${inc}</span>. Issued for <span class="highlight">${a.purpose}</span>.`
+      : `এই মর্মে প্রত্যয়ন করা যাইতেছে যে, <span class="highlight">${a.userName}</span>, জাতীয় পরিচয়পত্র নম্বর: <span class="highlight">${a.userNID}</span> — তিনি অত্র ইউনিয়নের স্থায়ী বাসিন্দা। সরেজমিনে যাচাই অনুযায়ী, <span class="highlight">${src}</span> খাত হইতে তাঁহার বার্ষিক আয় আনুমানিক <span class="highlight">৳${inc} (টাকা)</span> মাত্র। <span class="highlight">${a.purpose}</span> উদ্দেশ্যে এই আয় সনদ প্রদান করা হইল।`;
+  },
+};
+
+async function loadCert() {
+  const params = new URLSearchParams(location.search);
+  const appId = params.get('id');
+  if (!appId) { showErr('আবেদন ID পাওয়া যায়নি'); return; }
+
+  try {
+    const r = await fetch(`/api/admin/application/${appId}`, { credentials:'include' });
+    if (!r.ok) {
+      const r2 = await fetch('/api/user/applications', { credentials:'include' });
+      if (r2.ok) { const apps = await r2.json(); app = apps.find(a => a.id === appId); }
+    } else { app = await r.json(); }
+    
+    if (!app) { showErr('সনদ পাওয়া যায়নি বা সার্ভার ত্রুটি'); return; }
+    if (app.status !== 'approved') { showErr('এই আবেদনটি এখনো অনুমোদিত হয়নি'); return; }
+    render();
+  } catch(e) { showErr('সার্ভারের সাথে সংযোগ স্থাপন করা যায়নি'); }
+}
+
+function setLang(l) { lang = l; render(); }
+
+function render() {
+  if (!app) return;
+  const tn = typeNames[app.type] || { bn: app.typeName, en: app.typeName };
+  const title = lang==='both' ? `${tn.bn} <br><span style="font-size:1.1rem;font-weight:600;opacity:0.9;">${tn.en}</span>` : tn[lang==='en'?'en':'bn'];
+  const bodyFn = bodies[app.type] || bodies.character;
+  const bodyText = lang==='both'
+    ? bodyFn(app,'bn') + '<div style="margin:1.5rem 0; border-bottom:1px dashed #ccc;"></div><div style="font-family:\'Times New Roman\', serif; font-size:1.1rem; color:#333;">' + bodyFn(app,'en') + '</div>'
+    : (lang==='en' ? `<div style="font-family:\'Times New Roman\', serif; font-size:1.15rem;">${bodyFn(app,'en')}</div>` : bodyFn(app,'bn'));
+    
+  const approvedDate = new Date(app.approvedAt || app.updatedAt);
+  const today = new Date();
+
+  // 🌟 Premium Admin Comment Section
+  const adminCommentHtml = app.adminComment ? `
+    <div class="admin-comment">
+      <p>"${app.adminComment}"</p>
+      <span>— ${lang==='en'?'Official Endorsement / Remarks':'সরেজমিনে যাচাই ও বিশেষ মন্তব্য'}</span>
+    </div>
+  ` : '';
+
+  document.getElementById('cert-content').innerHTML = `
+    <div class="giant-watermark">APPROVED</div>
+    
+    <div class="premium-border">
+      <div class="corner corner-tl"></div>
+      <div class="corner corner-tr"></div>
+      <div class="corner corner-bl"></div>
+      <div class="corner corner-br"></div>
+
+      <div class="cert-header">
+        <div class="emblem-wrapper">
+          <div class="emblem-bg"></div>
+          <div class="emblem">🇧🇩</div>
+        </div>
+        <div class="gov-title">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</div>
+        <div class="gov-subtitle">Government of the People's Republic of Bangladesh</div>
+        <div class="up-title">${app.userUnion || 'ইউনিয়ন পরিষদ কার্যালয়'}</div>
+      </div>
+
+      <div class="cert-meta">
+        <div>সনদ নং: <span>${app.id}</span></div>
+        <div>ইস্যুর তারিখ: <span>${approvedDate.toLocaleDateString('bn-BD')}</span></div>
+      </div>
+
+      <div class="title-ribbon">
+        <h1>${title}</h1>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">${lang==='en'?'Applicant Name':'আবেদনকারীর নাম'}</span>
+          <span class="info-value">${app.userName}${app.userNameEn?' / '+app.userNameEn:''}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">${lang==='en'?'NID Number':'জাতীয় পরিচয়পত্র নং'}</span>
+          <span class="info-value" style="font-family: monospace;">${app.userNID||'—'}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">${lang==='en'?"Father's Name":'পিতার নাম'}</span>
+          <span class="info-value">${app.userFather||'—'}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">${lang==='en'?"Mother's Name":'মাতার নাম'}</span>
+          <span class="info-value">${app.userMother||'—'}</span>
+        </div>
+        <div class="info-item" style="grid-column: 1 / -1;">
+          <span class="info-label">${lang==='en'?'Permanent Address':'ঠিকানা'}</span>
+          <span class="info-value">${app.userAddress||'—'}</span>
+        </div>
+      </div>
+
+      <div class="cert-body">
+        ${bodyText}
+      </div>
+
+      ${adminCommentHtml}
+
+      <div class="cert-footer">
+        <div class="sig-box">
+          <div class="sig-line">
+            <span style="position:absolute; bottom:2px; left:50%; transform:translateX(-50%); font-family:'Noto Serif Bengali',serif; font-size:1.2rem; color:var(--g-main); font-style:italic; opacity:0.8;">✍</span>
+          </div>
+          <h4>${lang==='en'?'Applicant Signature':'আবেদনকারীর স্বাক্ষর'}</h4>
+          <p>${app.userName}</p>
+        </div>
+
+        <div class="official-stamp">
+          ইউনিয়ন পরিষদ<br>সিলমোহর<br>ও<br>যাচাইকৃত
+        </div>
+
+        <div class="sig-box">
+          <div class="sig-line">
+            <span style="position:absolute; bottom:5px; left:50%; transform:translateX(-50%); font-family:'Pacifico', cursive; font-size:1.4rem; color:#0f172a; font-style:italic;">Approved</span>
+          </div>
+          <h4>${lang==='en'?'Chairman / Secretary':'চেয়ারম্যান / সচিব'}</h4>
+          <p>${app.approvedBy||'ইউপি চেয়ারম্যান'}</p>
+        </div>
+      </div>
+
+      <div class="verify-bar">
+        <div class="qr-sim">
+          <div class="qr-box"></div>
+          <div>
+            <div style="font-weight:bold; color:var(--ink); font-size:0.85rem;">VERIFICATION CODE</div>
+            <div>${app.id}-VRF-${Math.random().toString(36).slice(2,8).toUpperCase()}</div>
+            <div style="margin-top:0.2rem;"><span class="digital-verified">✔ ডিজিটাল স্বাক্ষরিত ও সত্যায়িত</span></div>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div>Print Date: ${today.toLocaleDateString('en-GB')}</div>
+          <div>System Generated Document</div>
+          <div style="color:var(--g-main); font-weight:bold;">portal.bd/verify/${app.id}</div>
+        </div>
+      </div>
+
+    </div>
+  `;
+}
+
+function showErr(msg) {
+  document.getElementById('cert-content').innerHTML = `
+    <div class="text-center p-16">
+      <div style="font-size:4rem; margin-bottom:1rem;">⚠️</div>
+      <h2 style="font-size:1.5rem; font-weight:bold; color:#d32f2f; margin-bottom:1rem; font-family:'Noto Serif Bengali',serif;">${msg}</h2>
+      <button onclick="window.close()" class="btn btn-g mt-4">← বন্ধ করে ফিরে যান</button>
+    </div>`;
+}
+
+loadCert();
+</script>
+</body>
+</html>
