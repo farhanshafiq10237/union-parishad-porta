@@ -47,7 +47,50 @@ function seedData() {
     DB.write('admins.json', admins);
     console.log('✅ Seeded admins for login');
   }
-  // ইউজার বা অ্যাপ্লিকেশনের কোনো ডামি ডেটা তৈরি হবে না।
+  // Demo citizen users seed করা হচ্ছে (login page-এর demo buttons-এর জন্য)
+  let users = DB.read('users.json');
+  if (users.length === 0) {
+    users = [
+      {
+        id: 'USR001',
+        nameBn: 'মোঃ রহিম উদ্দিন',
+        nameEn: 'Md. Rahim Uddin',
+        fatherBn: 'মোঃ করিম উদ্দিন',
+        fatherEn: 'Md. Karim Uddin',
+        motherBn: 'মোছাঃ আনোয়ারা বেগম',
+        motherEn: 'Mst. Anowara Begum',
+        dob: '1985-06-15',
+        gender: 'male',
+        nid: '1234567890',
+        mobile: '01712345678',
+        addressBn: 'গ্রাম: উত্তর পাড়া, পোস্ট: শাহবাজপুর',
+        union: 'উত্তর শাহবাজপুর',
+        passwordHash: hashPassword('user123'),
+        verified: true,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 'USR002',
+        nameBn: 'ফাতেমা বেগম',
+        nameEn: 'Fatema Begum',
+        fatherBn: 'মোঃ আলী হোসেন',
+        fatherEn: 'Md. Ali Hossain',
+        motherBn: 'মোছাঃ রহিমা বেগম',
+        motherEn: 'Mst. Rahima Begum',
+        dob: '1990-03-22',
+        gender: 'female',
+        nid: '9876543210',
+        mobile: '01812345678',
+        addressBn: 'গ্রাম: দক্ষিণ পাড়া, পোস্ট: শাহবাজপুর',
+        union: 'উত্তর শাহবাজপুর',
+        passwordHash: hashPassword('user123'),
+        verified: true,
+        createdAt: new Date().toISOString()
+      }
+    ];
+    DB.write('users.json', users);
+    console.log('✅ Seeded demo citizen users for login');
+  }
 }
 
 // ─── Crypto helpers ───────────────────────────────────────────────────────────
